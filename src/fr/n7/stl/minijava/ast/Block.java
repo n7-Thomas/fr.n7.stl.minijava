@@ -5,7 +5,6 @@ package fr.n7.stl.minijava.ast;
 
 import java.util.List;
 
-import fr.n7.stl.minijava.ast.expression.Expression;
 import fr.n7.stl.minijava.ast.instruction.Instruction;
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
@@ -13,7 +12,6 @@ import fr.n7.stl.minijava.ast.scope.SymbolTable;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.Register;
 import fr.n7.stl.tam.ast.TAMFactory;
-import fr.n7.stl.tam.ast.impl.FragmentImpl;
 
 /**
  * Represents a Block node in the Abstract Syntax Tree node for the Bloc language.

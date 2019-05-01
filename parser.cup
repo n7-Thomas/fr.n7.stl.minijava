@@ -64,6 +64,12 @@ terminal				UL_Inferieur, UL_Superieur;
 terminal				UL_Inferieur_Egal, UL_Superieur_Egal;
 terminal				UL_Double_Egal, UL_Exclamation_Egal;
 terminal				UL_Si, UL_Sinon, UL_Tant_Que, UL_Nouveau, UL_Afficher, UL_Retour;
+
+// GRAMMAIRE DE MINIJAVA 
+terminal                UL_Interface, UL_Class;
+terminal                UL_Extends, UL_Implements;
+terminal                UL_Final, UL_Abstract, UL_Public, UL_Private, UL_Static;
+
 terminal				UL_Definition_Constante, UL_Definition_Type, UL_Enregistrement, UL_Enumeration;
 terminal				UL_Type_Booleen, UL_Type_Caractere, UL_Type_Chaine, UL_Type_Entier, UL_Type_Flottant, UL_Type_Vide;
 terminal String		UL_Identificateur, UL_Chaine, UL_Caractere;
@@ -73,8 +79,8 @@ terminal String		UL_Nombre_Entier, UL_Nombre_Flottant, UL_Nul, UL_Vrai, UL_Faux;
 non terminal Block						Program;
 non terminal Block						Bloc; 
 non terminal List<Instruction>			Instructions; 
-non terminal Instruction					Instruction;
-non terminal Instruction					Declaration;
+non terminal Instruction				Instruction;
+non terminal Instruction				Declaration;
 non terminal List<Expression>			Expressions;
 non terminal List<FieldDeclaration>		Champs;
 non terminal FieldDeclaration			Champ;
@@ -83,8 +89,28 @@ non terminal LabelDeclaration			Etiquette;
 non terminal List<ParameterDeclaration>	Parameters;
 non terminal Pair<String,PartialType>	Identifiant;
 non terminal Type						Type, Atomique;
-non terminal Expression 					Expression;
+non terminal Expression 				Expression;
 non terminal AssignableExpression		Affectable;
+
+// Définir ici les non terminaux : TODO
+non terminal Block 					  Programme;
+non terminal Instruction			  Decl;
+non terminal Instruction			  Extension;
+non terminal Instruction			  Instanciation;
+non terminal List<Instanciation>      Instanciations;
+non terminal Instruction              Definition;
+non terminal List<Definition>         Definitions;
+non terminal Instruction              Attribut;
+//non terminal List<ParameterDeclaration>	Parameters;
+non terminal Instruction              Methode;
+//non terminal Type                   Type;
+non terminal Instruction              Entete;
+non terminal List<Entete>             Entetes;
+
+non terminal Instruction              ListeIdentiteExtends; // Declaration : ident < ListeIdentiteExtends >
+non terminal Instruction              ListeInstanciationsEsperluette; // ListeIdentiteExtends : ident extends LIEsp
+
+
 
 /* Associativité et Priorité relative des opérateurs (du moins prioritaire au plus prioritaire) */
 /* Opérateur le moins prioritiaire */	
@@ -133,6 +159,85 @@ Program ::= UL_Identificateur:nom Bloc:bloc
 				}
 			:}
 		;
+
+/*
+Programme :
+- TODO: interface declaration extends instanciations { entetes }
+- TODO: interface declaration { entetes }
+- TODO: class declaration extension { definition }
+- TODO: final class declaration extension { definition }
+- TODO: abstract class declaration extension { definition }
+*/ 
+Programme ::= /*UL_Interface Decl:decl UL_Extends Instanciations:instanciations UL_Accolade_Ouvrante 
+					Entetes:entetes UL_Accolade_Fermante
+				{: :}
+			  | UL_Interface Decl:decl UL_Accolade_Ouvrante Entetes:entetes UL_Accolade_Fermante
+				{: :} 
+			  | UL_Interface Decl:decl UL_Extends Instanciations:instanciations UL_Accolade_Ouvrante UL_Accolade_Fermante
+				{: :}
+			  | UL_Interface Decl:decl UL_Accolade_Ouvrante UL_Accolade_Fermante
+				{: :} 
+			  |*/ UL_Class Decl:decl Extension:extension UL_Accolade_Ouvrante Definitions:definitions 
+			  		UL_Accolade_Fermante
+				{: :}
+			  /*| UL_Final UL_Class Decl:decl Extension:extension UL_Accolade_Ouvrante Definitions:definitions 
+			  		UL_Accolade_Fermante
+				{: :}
+			  | UL_Abstract UL_Class Decl:decl Extension:extension UL_Accolade_Ouvrante Definitions:definitions 
+			  		UL_Accolade_Fermante
+				{: :}*/
+			   ;
+
+Decl ::= Identifiant:identifiant {::}
+		 | Identifiant:identifiant UL_Inferieur ListeIdentiteExtends UL_Superieur {::}
+		 ;
+		 
+ListeIdentiteExtends ::= Identifiant:identifiant {::}
+						 | Identifiant:identifiant UL_Extends ListeInstanciationsEsperluette {::}
+						 | Identifiant:identifiant UL_Virgule ListeIdentiteExtends {::}
+						 | Identifiant:identifiant UL_Extends ListeInstanciationsEsperluette UL_Virgule 
+						 	ListeIdentiteExtends{::}
+						 ;
+
+ListeIdentiteExtends ::= Instanciation:instanciation {::}
+					     | Instanciation:instanciation UL_Esperluette ListeIdentiteExtends {::}
+					     ;
+					     
+Extension ::= UL_Extends Instanciation:instanciation {::}
+			  | UL_Extends Instanciation:instanciation UL_Implements Instanciations:instanciations {::}
+			  | UL_Implements Instanciations:instanciations {::}
+			  ;
+
+Definition ::= UL_Public Attribut:attribut {::}; // IL Y A BEAUCOUP DE CAS POSSIBLES
+		  
+Definitions ::= Definition:definition {::}
+				| Definition:definition Definitions:definitions {::}
+				;
+
+Instanciation ::= Identifiant:identifiant {::} // CONFLIT AVEC DECL
+				 |Identifiant:identifiant UL_Inferieur Instanciations:instanciations UL_Superieur {::}
+				;
+				
+Instanciations ::= Instanciation:instanciation {::}
+				   | Instanciation:instanciation UL_Virgule Instanciations:instanciations {::}
+				   ;
+
+Attribut ::= Type:type Identifiant:identifiant {::};
+
+Entete ::=   UL_Type_Vide Identifiant:identifiant UL_Parenthese_Ouvrante UL_Parenthese_Fermante {::}
+		   | UL_Type_Vide Identifiant:identifiant UL_Parenthese_Ouvrante Parameters:parametres UL_Parenthese_Fermante {::}
+		   | Type:type Identifiant:identifiant UL_Parenthese_Ouvrante UL_Parenthese_Fermante {::}
+		   | Type:type Identifiant:identifiant UL_Parenthese_Ouvrante Parameters:parametres UL_Parenthese_Fermante {::}
+		   ;
+
+Entetes ::= Entete:entete UL_Point_Virgule {::}
+			| Entete:entete UL_Point_Virgule Entetes:entetes {::};
+
+Methode ::= Entete:entete Bloc:bloc {::} // Bloc pour corps, c'est ok ?
+			| UL_Final Entete:entete Bloc:bloc {::}
+			| UL_Abstract Entete:entete Bloc:bloc {::}
+			;
+
 
 Bloc ::= UL_Accolade_Ouvrante Instructions:instructions UL_Accolade_Fermante 
 			{: 
@@ -218,6 +323,13 @@ Type ::= Atomique:atomique
 			{: 
 				RESULT = new NamedType( nom ); 
 			:}
+			
+		
+		| Instanciation:instanciation 
+			{:
+				// TODO
+			:}	
+		
 /*	Bloc	| UL_Enregistrement UL_Identificateur:nom UL_Accolade_Ouvrante Champs:champs UL_Accolade_Fermante
 			{: 
 				RESULT = new RecordType( nom, champs ); 
