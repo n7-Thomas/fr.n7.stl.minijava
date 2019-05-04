@@ -94,17 +94,17 @@ non terminal Expression 				Expression;
 non terminal AssignableExpression		Affectable;
 
 // Définir ici les non terminaux
-non terminal List<Objet>              Programme;
-non terminal List<Objet>              Objets;
-non terminal Objet 					  Objet;
-non terminal ClasseDeclaration		  Classe;
-non terminal Definition               Definition;
-non terminal List<Definition>         Definitions;
-non terminal AttributDeclaration      Attribut;
-non terminal MethodeDeclaration       Methode; // OK 
-non terminal ConstructeurDeclaration  Constructeur; 
-non terminal Entete                   Entete; // OK
-non terminal List<Entete>             Entetes;
+non terminal List<Objet>                Programme;
+non terminal List<Objet>                Objets;
+non terminal Objet 					    Objet;
+non terminal ClasseDeclaration		    Classe;
+non terminal Definition                 Definition;
+non terminal List<Definition>           Definitions;
+non terminal AttributDeclaration        Attribut;
+non terminal MethodeDeclaration         Methode; // OK 
+non terminal ConstructeurDeclaration    Constructeur; 
+non terminal Entete                     Entete; // OK
+non terminal List<Entete>               Entetes;
 
 // TODO
 //non terminal Expression   		  Extension;

@@ -18,17 +18,17 @@ public class Classe implements Objet {
 	
 	private List<Keyword> keywords; 
 	
-	private Instruction declaration;
+	private Declaration declaration;
 	
 	private List<Definition> definitions;
 	
-	public Classe(Instruction _declaration, List<Definition> definitions){
+	public Classe(Declaration _declaration, List<Definition> definitions){
 		this.declaration = _declaration;
 		this.keywords = new ArrayList<Keyword>();
 		this.definitions = definitions;
 	}
 	
-	public Classe(Instruction _declaration, Keyword keyword, List<Definition> definitions){
+	public Classe(Declaration _declaration, Keyword keyword, List<Definition> definitions){
 		this.declaration = _declaration;
 		this.keywords = new ArrayList<Keyword>();
 		this.keywords.add(keyword);
