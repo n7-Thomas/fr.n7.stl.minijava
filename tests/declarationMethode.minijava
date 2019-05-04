@@ -7,4 +7,28 @@ class ClasseTest {
 	public abstract String methode6(){}
 	public void methode7(int x){}
 	public final int methode8(String s){}
+	private void methode11(){}
+	private int methode12(){}
+	private final void methode13(){}
+	private abstract void methode14(){}
+	private final int methode15(){}
+	private abstract String methode16(){}
+	private void methode17(int x){}
+	private final int methode18(String s){}
+	public static void methode1(){}
+	public static int methode2(){}
+	public static final void methode3(){}
+	public static abstract void methode4(){}
+	public static final int methode5(){}
+	public static abstract String methode6(){}
+	public static void methode7(int x){}
+	public static final int methode8(String s){}
+	private static void methode11(){}
+	private static int methode12(){}
+	private static final void methode13(){}
+	private static abstract void methode14(){}
+	private static final int methode15(){}
+	private static abstract String methode16(){}
+	private static void methode17(int x){}
+	private static final int methode18(String s){}
 }
