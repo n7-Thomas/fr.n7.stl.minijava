@@ -93,22 +93,26 @@ non terminal Type						Type, Atomique;
 non terminal Expression 				Expression;
 non terminal AssignableExpression		Affectable;
 
-// Définir ici les non terminaux : TODO
+// Définir ici les non terminaux
 non terminal List<Objet>              Programme;
 non terminal List<Objet>              Objets;
 non terminal Objet 					  Objet;
 non terminal ClasseDeclaration		  Classe;
-//non terminal Expression   			  Extension;
-//non terminal Instruction			  Instanciation;
-//non terminal List<Instanciation>      Instanciations;
 non terminal Definition               Definition;
 non terminal List<Definition>         Definitions;
 non terminal AttributDeclaration      Attribut;
-//non terminal List<ParameterDeclaration>	Parameters;
-non terminal MethodeDeclaration       Methode;
-//non terminal Type                   Type;
-non terminal Entete              Entete;
-//non terminal List<Entete>             Entetes;
+non terminal MethodeDeclaration       Methode; // OK 
+non terminal ConstructeurDeclaration  Constructeur; 
+non terminal Entete                   Entete; // OK
+non terminal List<Entete>             Entetes;
+
+// TODO
+//non terminal Expression   		  Extension;
+//non terminal Instruction			  Instanciation;
+//non terminal List<Instanciation>    Instanciations;
+
+//non terminal List<ParameterDeclaration>	Parameters; OK AVEC L'ANCIEN
+//non terminal Type                     Type; // OK avec l'ancien
 
 //non terminal Instruction              ListeIdentiteExtends; // Declaration : ident < ListeIdentiteExtends >
 //non terminal Instruction              ListeInstanciationsEsperluette; // ListeIdentiteExtends : ident extends LIEsp
@@ -243,8 +247,9 @@ Extension ::= UL_Extends Instanciation:instanciation {::}
 			  | UL_Extends Instanciation:instanciation UL_Implements Instanciations:instanciations {::}
 			  | UL_Implements Instanciations:instanciations {::}
 			  ;
-*/
-Definition ::= UL_Public Attribut:attribut 
+*/	
+Definition ::= 	/* ATTRIBUTS */
+				UL_Public Attribut:attribut 
 				{:
 					List<Keyword> keywords = new ArrayList<Keyword>();
 					keywords.add(Keyword.PUBLIC);
@@ -300,6 +305,7 @@ Definition ::= UL_Public Attribut:attribut
 					keywords.add(Keyword.FINAL);
 					RESULT = new AttributDefinition(keywords,attribut);
 				:}
+				/* METHODES */
 				| UL_Public Methode:methode
 				{:
 					List<Keyword> keywords = new ArrayList<Keyword>();
@@ -326,8 +332,12 @@ Definition ::= UL_Public Attribut:attribut
 					keywords.add(Keyword.STATIC);
 					RESULT = new MethodeDefinition(keywords,methode);
 				:}
-				
-				; // IL Y A BEAUCOUP DE CAS POSSIBLES
+				| UL_Public Constructeur:constructeur 
+				{:
+					RESULT = new ConstructeurDefinition(constructeur);
+				:}	
+							
+				; 
 		  
 Definitions ::= Definitions:definitions Definition:definition 
 				{:
@@ -380,10 +390,19 @@ Entete ::=   UL_Type_Vide Identifiant:identifiant UL_Parenthese_Ouvrante UL_Pare
 				RESULT = new Entete(identifiant.getLeft(), type, parametres);
 			:}
 		   ;
-/*
-Entetes ::= Entete:entete UL_Point_Virgule {::}
-			| Entete:entete UL_Point_Virgule Entetes:entetes {::};
-*/
+
+Entetes ::= Entete:entete UL_Point_Virgule Entetes:entetes 
+			{:
+				ententes.add(entete);
+				RESULT = ententes;
+			:}
+			| Entete:entete UL_Point_Virgule
+			{:
+				List<Entete> _ententes = new ArrayList<Entete>();
+				_ententes.add(entente);
+				RESULT = _ententes;
+			:};
+
 Methode ::=  Entete:entete Bloc:bloc 
 			{:
 				RESULT = new MethodeDeclaration(entete, bloc);
@@ -401,6 +420,16 @@ Methode ::=  Entete:entete Bloc:bloc
 				RESULT = new MethodeDeclaration(entete, keywords, bloc);
 			:}
 			;
+
+Constructeur ::= Identifiant:identifiant UL_Parenthese_Ouvrante UL_Parenthese_Fermante Bloc:corps
+				{:
+					RESULT = new ConstructeurDeclaration(identifiant.getLeft(), corps);
+				:}
+				| Identifiant:identifiant UL_Parenthese_Ouvrante Parameters:parametres UL_Parenthese_Fermante Bloc:corps
+				{:
+					RESULT = new ConstructeurDeclaration(identifiant.getLeft(), parametres, corps);
+				:}
+				;
 
 
 Bloc ::= UL_Accolade_Ouvrante Instructions:instructions UL_Accolade_Fermante 

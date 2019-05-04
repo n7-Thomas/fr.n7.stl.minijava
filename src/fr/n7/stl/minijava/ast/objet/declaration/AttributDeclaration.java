@@ -1,4 +1,4 @@
-package fr.n7.stl.minijava.ast.objet;
+package fr.n7.stl.minijava.ast.objet.declaration;
 
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.type.Type;

@@ -1,4 +1,4 @@
-package fr.n7.stl.minijava.ast.objet;
+package fr.n7.stl.minijava.ast.objet.declaration;
 
 public enum Keyword {
 	PUBLIC, PRIVATE,

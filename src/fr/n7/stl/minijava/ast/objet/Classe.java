@@ -5,6 +5,8 @@ import java.util.List;
 
 import fr.n7.stl.minijava.ast.expression.Expression;
 import fr.n7.stl.minijava.ast.instruction.Instruction;
+import fr.n7.stl.minijava.ast.objet.declaration.Keyword;
+import fr.n7.stl.minijava.ast.objet.definition.Definition;
 import fr.n7.stl.minijava.ast.scope.Declaration;
 
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
@@ -19,18 +21,6 @@ public class Classe implements Objet {
 	private Instruction declaration;
 	
 	private List<Definition> definitions;
-	/*
-	private Expression extension;
-	
-	private List<Definition> definitions;
-	
-	
-	public Classe(Instruction declaration, Expression extension, List<Definition> definitions){
-		this.declaration = declaration;
-		this.extension = extension;
-		this.definitions = definitions;
-	}
-	*/
 	
 	public Classe(Instruction _declaration, List<Definition> definitions){
 		this.declaration = _declaration;

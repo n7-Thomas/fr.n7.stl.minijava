@@ -19,7 +19,8 @@ public enum AtomicType implements Type {
 	StringType,
 	VoidType,
 	NullType,
-	ErrorType
+	ErrorType, 
+	ConstructeurType
 	;
 
 	/* (non-Javadoc)
