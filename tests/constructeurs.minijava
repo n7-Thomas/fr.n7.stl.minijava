@@ -1,7 +1,7 @@
 class ClasseTest {
 	private int attribut;
 	
-	public void methode()
+	public void methode(){}
 	
 	public ClasseTest(){}
 	

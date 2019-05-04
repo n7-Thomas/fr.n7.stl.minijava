@@ -1,33 +1,29 @@
-package fr.n7.stl.minijava.ast.objet.definition;
+package fr.n7.stl.minijava.ast.objet;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.n7.stl.minijava.ast.objet.declaration.Keyword;
+import fr.n7.stl.minijava.ast.objet.declaration.Entete;
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.Register;
 import fr.n7.stl.tam.ast.TAMFactory;
 
-public class ConstructeurDefinition implements Definition {
+public class Interface implements Objet {
 
-	private List<Keyword> keywords;
-	
 	private Declaration declaration;
 
-	public ConstructeurDefinition(Declaration _declaration) {
+	private List<Entete> entetes;
+
+	public Interface(Declaration _declaration) {
 		this.declaration = _declaration;
-		this.keywords = new ArrayList<Keyword>();
+		this.entetes = new ArrayList<Entete>();
 	}
 	
-	public ConstructeurDefinition(List<Keyword> _keywords, Declaration _declaration) {
+	public Interface(Declaration _declaration, List<Entete> _entetes) {
 		this.declaration = _declaration;
-		this.keywords = _keywords;
-	}
-
-	public String toString() {
-		return this.keywords.toString() + " " + this.declaration.toString();
+		this.entetes = _entetes;
 	}
 
 	@Override
@@ -43,15 +39,28 @@ public class ConstructeurDefinition implements Definition {
 	}
 
 	@Override
-	public int allocateMemory(Register _register, int _offset) {
+	public void allocateMemory(Register _register, int _offset) {
 		// TODO Auto-generated method stub
-		return 0;
+
 	}
 
 	@Override
 	public Fragment getCode(TAMFactory _factory) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public String toString() {
+		String str = "";
+		str += "interface " + this.declaration.toString();
+		str += " {\n";
+		for (Entete entete : entetes) {
+			str += entete.toString() + "\n";
+		}
+		str += "}";
+
+		return str;
 	}
 
 }

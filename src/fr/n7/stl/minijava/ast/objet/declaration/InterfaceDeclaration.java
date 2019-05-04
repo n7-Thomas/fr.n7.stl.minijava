@@ -1,33 +1,20 @@
-package fr.n7.stl.minijava.ast.objet.definition;
+package fr.n7.stl.minijava.ast.objet.declaration;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import fr.n7.stl.minijava.ast.objet.declaration.Keyword;
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
+import fr.n7.stl.minijava.ast.type.Type;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.Register;
 import fr.n7.stl.tam.ast.TAMFactory;
 
-public class ConstructeurDefinition implements Definition {
+public class InterfaceDeclaration implements ObjetDeclaration {
 
-	private List<Keyword> keywords;
+	private String name;
 	
-	private Declaration declaration;
+	//private Type type;
 
-	public ConstructeurDefinition(Declaration _declaration) {
-		this.declaration = _declaration;
-		this.keywords = new ArrayList<Keyword>();
-	}
-	
-	public ConstructeurDefinition(List<Keyword> _keywords, Declaration _declaration) {
-		this.declaration = _declaration;
-		this.keywords = _keywords;
-	}
-
-	public String toString() {
-		return this.keywords.toString() + " " + this.declaration.toString();
+	public InterfaceDeclaration(String _name) {
+		this.name = _name;
 	}
 
 	@Override
@@ -52,6 +39,21 @@ public class ConstructeurDefinition implements Definition {
 	public Fragment getCode(TAMFactory _factory) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public String getName() {
+		return this.name;
+	}
+
+	@Override
+	public Type getType() {
+		//TODO
+		return null;
+	}
+	
+	public String toString() {
+		return this.getName();
 	}
 
 }

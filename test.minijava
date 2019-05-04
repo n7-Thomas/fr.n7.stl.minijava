@@ -1,14 +1,31 @@
+interface Inter {
+	void afficherX();
+	int addX(int y);
+}
+
 class ClasseTest {
-	private int attribut;
+	private int x;
 	
-	public void methode()
+	public ClasseTest () {
+		x = 3;
+	}
 	
-	public ClasseTest(){}
+	public ClasseTest (int y) {
+		x = y;
+	}
 	
-	public ClasseTest(int x){
+	// NE DOIT PAS PASSER LE RESOLVE
+	public azeae(){
+	
+	}
+	
+	public void afficherX(){
 		print x;
 	}
 	
-	// NE DEVRAIT PAS MARCHER AU RESOLVE :
-	public FauxConstructeur(){}
-}
+	public int addX(int y){
+		x = x + y;
+	}
+}	
+
+

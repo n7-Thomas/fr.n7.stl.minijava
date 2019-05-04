@@ -22,6 +22,8 @@ import fr.n7.stl.minijava.ast.scope.*;
 import fr.n7.stl.minijava.ast.type.*;
 import fr.n7.stl.minijava.ast.type.declaration.*;
 import fr.n7.stl.minijava.ast.objet.*;
+import fr.n7.stl.minijava.ast.objet.declaration.*;
+import fr.n7.stl.minijava.ast.objet.definition.*;
 import fr.n7.stl.util.*;
 import fr.n7.stl.tam.ast.*;
 
@@ -97,6 +99,7 @@ non terminal AssignableExpression		Affectable;
 non terminal List<Objet>                Programme;
 non terminal List<Objet>                Objets;
 non terminal Objet 					    Objet;
+non terminal InterfaceDeclaration       Interface;
 non terminal ClasseDeclaration		    Classe;
 non terminal Definition                 Definition;
 non terminal List<Definition>           Definitions;
@@ -201,16 +204,23 @@ Objet :
 - TODO: final class declaration extension { definition }
 - TODO: abstract class declaration extension { definition }
 */ 
-Objet ::= /*UL_Interface Declaration:declaration UL_Extends Instanciations:instanciations UL_Accolade_Ouvrante 
-					Entetes:entetes UL_Accolade_Fermante
-				{: :}
-			  | UL_Interface Declaration:declaration UL_Accolade_Ouvrante Entetes:entetes UL_Accolade_Fermante
-				{: :} 
-			  | UL_Interface Declaration:declaration UL_Extends Instanciations:instanciations UL_Accolade_Ouvrante UL_Accolade_Fermante
-				{: :}
-			  | UL_Interface Declaration:declaration UL_Accolade_Ouvrante UL_Accolade_Fermante
-				{: :} 
-			  |*/ UL_Class Classe:declaration /*Extension:extension*/ UL_Accolade_Ouvrante Definitions:definitions UL_Accolade_Fermante
+Objet ::=     UL_Interface Interface:declaration /*UL_Extends Instanciations:instanciations*/ UL_Accolade_Ouvrante  Entetes:entetes UL_Accolade_Fermante
+				{: 
+					RESULT = new Interface(declaration, entetes);
+				:}
+			  /*| UL_Interface Interface:declaration UL_Accolade_Ouvrante Entetes:entetes UL_Accolade_Fermante
+				{: 
+					RESULT = new Interface(declaration, entetes);
+				:}*/ 
+			  | UL_Interface Interface:declaration /*UL_Extends Instanciations:instanciations */ UL_Accolade_Ouvrante UL_Accolade_Fermante
+				{: 
+					RESULT = new Interface(declaration);
+				:}
+			  /*| UL_Interface Interface:declaration UL_Accolade_Ouvrante UL_Accolade_Fermante
+				{: 
+					RESULT = new Interface(declaration);
+				:} */
+			  | UL_Class Classe:declaration /*Extension:extension*/ UL_Accolade_Ouvrante Definitions:definitions UL_Accolade_Fermante
 				{: 
 					RESULT = new Classe(declaration, definitions);
 				:}
@@ -223,14 +233,22 @@ Objet ::= /*UL_Interface Declaration:declaration UL_Extends Instanciations:insta
 					RESULT = new Classe(declaration, Keyword.ABSTRACT, definitions);
 				:}
 			   ;
-			   
-Classe ::= Identifiant:identifiant 
-					{:
-						RESULT = new ClasseDeclaration(identifiant.getLeft());
-					:}
-			       /* | Identifiant:identifiant UL_Inferieur ListeIdentiteExtends UL_Superieur {::}
-		 			*/
-		 			;
+		
+Interface ::= UL_Identificateur:nom
+			{:
+				RESULT = new InterfaceDeclaration(nom);
+			:}
+			 /* | UL_Identificateur:nom UL_Inferieur ListeIdentiteExtends UL_Superieur {::}
+		 	*/
+		 	;		
+	   
+Classe ::=  UL_Identificateur:nom
+			{:
+				RESULT = new ClasseDeclaration(nom);
+			:}
+			  /* | UL_Identificateur:nom UL_Inferieur ListeIdentiteExtends UL_Superieur {::}
+		 	*/
+		 	;
 /*
 ListeIdentiteExtends ::= Identifiant:identifiant {::}
 						 | Identifiant:identifiant UL_Extends ListeInstanciationsEsperluette {::}
@@ -332,11 +350,18 @@ Definition ::= 	/* ATTRIBUTS */
 					keywords.add(Keyword.STATIC);
 					RESULT = new MethodeDefinition(keywords,methode);
 				:}
-				| UL_Public Constructeur:constructeur 
+				| UL_Public Constructeur:constructeur 
 				{:
-					RESULT = new ConstructeurDefinition(constructeur);
+					List<Keyword> keywords = new ArrayList<Keyword>();
+					keywords.add(Keyword.PUBLIC);
+					RESULT = new ConstructeurDefinition(keywords, constructeur);
 				:}	
-							
+				| UL_Private Constructeur:constructeur 
+				{:
+					List<Keyword> keywords = new ArrayList<Keyword>();
+					keywords.add(Keyword.PRIVATE);
+					RESULT = new ConstructeurDefinition(keywords, constructeur);
+				:}			
 				; 
 		  
 Definitions ::= Definitions:definitions Definition:definition 
@@ -373,34 +398,34 @@ Attribut ::= Type:type Identifiant:identifiant UL_Point_Virgule
 			:};
 
 
-Entete ::=   UL_Type_Vide Identifiant:identifiant UL_Parenthese_Ouvrante UL_Parenthese_Fermante 
+Entete ::=   UL_Type_Vide UL_Identificateur:nom UL_Parenthese_Ouvrante UL_Parenthese_Fermante 
 			{:
-				RESULT = new Entete(identifiant.getLeft(), AtomicType.VoidType);
+				RESULT = new Entete(nom, AtomicType.VoidType);
 			:}
-		   | UL_Type_Vide Identifiant:identifiant UL_Parenthese_Ouvrante Parameters:parametres UL_Parenthese_Fermante 
+		   | UL_Type_Vide UL_Identificateur:nom UL_Parenthese_Ouvrante Parameters:parametres UL_Parenthese_Fermante 
 		   {:
-				RESULT = new Entete(identifiant.getLeft(), AtomicType.VoidType, parametres);
+				RESULT = new Entete(nom, AtomicType.VoidType, parametres);
 			:}
-		   | Type:type Identifiant:identifiant UL_Parenthese_Ouvrante UL_Parenthese_Fermante 
+		   | Type:type UL_Identificateur:nom UL_Parenthese_Ouvrante UL_Parenthese_Fermante 
 		   {:	
-				RESULT = new Entete(identifiant.getLeft(), type);
+				RESULT = new Entete(nom, type);
 			:}
-		   | Type:type Identifiant:identifiant UL_Parenthese_Ouvrante Parameters:parametres UL_Parenthese_Fermante 
+		   | Type:type UL_Identificateur:nom UL_Parenthese_Ouvrante Parameters:parametres UL_Parenthese_Fermante 
 		   {:
-				RESULT = new Entete(identifiant.getLeft(), type, parametres);
+				RESULT = new Entete(nom, type, parametres);
 			:}
 		   ;
 
 Entetes ::= Entete:entete UL_Point_Virgule Entetes:entetes 
 			{:
-				ententes.add(entete);
-				RESULT = ententes;
+				entetes.add(entete);
+				RESULT = entetes;
 			:}
 			| Entete:entete UL_Point_Virgule
 			{:
-				List<Entete> _ententes = new ArrayList<Entete>();
-				_ententes.add(entente);
-				RESULT = _ententes;
+				List<Entete> _entetes = new ArrayList<Entete>();
+				_entetes.add(entete);
+				RESULT = _entetes;
 			:};
 
 Methode ::=  Entete:entete Bloc:bloc 
@@ -421,16 +446,15 @@ Methode ::=  Entete:entete Bloc:bloc
 			:}
 			;
 
-Constructeur ::= Identifiant:identifiant UL_Parenthese_Ouvrante UL_Parenthese_Fermante Bloc:corps
+Constructeur ::= UL_Identificateur:nom UL_Parenthese_Ouvrante UL_Parenthese_Fermante Bloc:corps
 				{:
-					RESULT = new ConstructeurDeclaration(identifiant.getLeft(), corps);
+					RESULT = new ConstructeurDeclaration(nom, corps);
 				:}
-				| Identifiant:identifiant UL_Parenthese_Ouvrante Parameters:parametres UL_Parenthese_Fermante Bloc:corps
+				| UL_Identificateur:nom UL_Parenthese_Ouvrante Parameters:parametres UL_Parenthese_Fermante Bloc:corps
 				{:
-					RESULT = new ConstructeurDeclaration(identifiant.getLeft(), parametres, corps);
+					RESULT = new ConstructeurDeclaration(nom, corps, parametres);
 				:}
 				;
-
 
 Bloc ::= UL_Accolade_Ouvrante Instructions:instructions UL_Accolade_Fermante 
 			{: 

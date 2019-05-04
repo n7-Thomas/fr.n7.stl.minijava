@@ -94,6 +94,7 @@ public enum AtomicType implements Type {
 		case StringType: return "String";
 		case VoidType: return "void";
 		case NullType: return "unit";
+		case ConstructeurType: return "constructeur";
 		default: throw new IllegalArgumentException( "The default case should never be triggered.");
 		}
 	}
