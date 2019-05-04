@@ -21,6 +21,7 @@ import fr.n7.stl.minijava.ast.instruction.declaration.*;
 import fr.n7.stl.minijava.ast.scope.*;
 import fr.n7.stl.minijava.ast.type.*;
 import fr.n7.stl.minijava.ast.type.declaration.*;
+import fr.n7.stl.minijava.ast.objet.*;
 import fr.n7.stl.util.*;
 import fr.n7.stl.tam.ast.*;
 
@@ -76,7 +77,7 @@ terminal String		UL_Identificateur, UL_Chaine, UL_Caractere;
 terminal String		UL_Nombre_Entier, UL_Nombre_Flottant, UL_Nul, UL_Vrai, UL_Faux; // Valeur transmise par l'analyseur lexical
 
 /* Non terminaux avec type renvoyé par actions sémantiques (RESULT = ...) */
-non terminal Block						Program;
+//non terminal Block						Program;
 non terminal Block						Bloc; 
 non terminal List<Instruction>			Instructions; 
 non terminal Instruction				Instruction;
@@ -93,22 +94,24 @@ non terminal Expression 				Expression;
 non terminal AssignableExpression		Affectable;
 
 // Définir ici les non terminaux : TODO
-non terminal Block 					  Programme;
-non terminal Instruction			  Decl;
-non terminal Instruction			  Extension;
-non terminal Instruction			  Instanciation;
-non terminal List<Instanciation>      Instanciations;
-non terminal Instruction              Definition;
+non terminal List<Objet>              Programme;
+non terminal List<Objet>              Objets;
+non terminal Objet 					  Objet;
+non terminal ClasseDeclaration		  Classe;
+//non terminal Expression   			  Extension;
+//non terminal Instruction			  Instanciation;
+//non terminal List<Instanciation>      Instanciations;
+non terminal Definition               Definition;
 non terminal List<Definition>         Definitions;
-non terminal Instruction              Attribut;
+non terminal AttributDeclaration      Attribut;
 //non terminal List<ParameterDeclaration>	Parameters;
-non terminal Instruction              Methode;
+non terminal MethodeDeclaration       Methode;
 //non terminal Type                   Type;
-non terminal Instruction              Entete;
-non terminal List<Entete>             Entetes;
+non terminal Entete              Entete;
+//non terminal List<Entete>             Entetes;
 
-non terminal Instruction              ListeIdentiteExtends; // Declaration : ident < ListeIdentiteExtends >
-non terminal Instruction              ListeInstanciationsEsperluette; // ListeIdentiteExtends : ident extends LIEsp
+//non terminal Instruction              ListeIdentiteExtends; // Declaration : ident < ListeIdentiteExtends >
+//non terminal Instruction              ListeInstanciationsEsperluette; // ListeIdentiteExtends : ident extends LIEsp
 
 
 
@@ -134,7 +137,7 @@ precedence left UL_Crochet_Ouvrant, UL_Point, UL_Parenthese_Ouvrante;
 /* Program et Bloc sont des non terminaux */
 /* UL_Identificateur est un terminal (Unité lexicale) */
 /* bloc est la variable utilisable dans l'action sémantique qui contient la valeur renvoyé par l'analyse du Bloc */
-Program ::= UL_Identificateur:nom Bloc:bloc
+/*Program ::= UL_Identificateur:nom Bloc:bloc
 			{: 
 				System.out.println( "Programme nommé " + nom );
 				System.out.println( bloc ); 
@@ -159,39 +162,72 @@ Program ::= UL_Identificateur:nom Bloc:bloc
 				}
 			:}
 		;
+*/
 
+/**
+	Un fichier représente plusieurs objets d'affilés
+*/
+
+Programme ::= Objets:objets 
+			{:
+				System.out.println("Nouveau programme : ");
+				for(Objet objet : objets){
+					System.out.println(objet);
+				}
+			:};
+
+
+Objets ::= Objets:objets Objet:objet
+			{:
+				objets.add(objet); 
+				RESULT = objets; 	
+			:}
+			| Objet:objet
+			{:
+				List<Objet> _objets = new LinkedList<Objet>(); 
+				_objets.add(objet); 
+				RESULT = _objets; 
+			:}
+			;
 /*
-Programme :
+Objet :
 - TODO: interface declaration extends instanciations { entetes }
 - TODO: interface declaration { entetes }
 - TODO: class declaration extension { definition }
 - TODO: final class declaration extension { definition }
 - TODO: abstract class declaration extension { definition }
 */ 
-Programme ::= /*UL_Interface Decl:decl UL_Extends Instanciations:instanciations UL_Accolade_Ouvrante 
+Objet ::= /*UL_Interface Declaration:declaration UL_Extends Instanciations:instanciations UL_Accolade_Ouvrante 
 					Entetes:entetes UL_Accolade_Fermante
 				{: :}
-			  | UL_Interface Decl:decl UL_Accolade_Ouvrante Entetes:entetes UL_Accolade_Fermante
+			  | UL_Interface Declaration:declaration UL_Accolade_Ouvrante Entetes:entetes UL_Accolade_Fermante
 				{: :} 
-			  | UL_Interface Decl:decl UL_Extends Instanciations:instanciations UL_Accolade_Ouvrante UL_Accolade_Fermante
+			  | UL_Interface Declaration:declaration UL_Extends Instanciations:instanciations UL_Accolade_Ouvrante UL_Accolade_Fermante
 				{: :}
-			  | UL_Interface Decl:decl UL_Accolade_Ouvrante UL_Accolade_Fermante
+			  | UL_Interface Declaration:declaration UL_Accolade_Ouvrante UL_Accolade_Fermante
 				{: :} 
-			  |*/ UL_Class Decl:decl Extension:extension UL_Accolade_Ouvrante Definitions:definitions 
-			  		UL_Accolade_Fermante
-				{: :}
-			  /*| UL_Final UL_Class Decl:decl Extension:extension UL_Accolade_Ouvrante Definitions:definitions 
-			  		UL_Accolade_Fermante
-				{: :}
-			  | UL_Abstract UL_Class Decl:decl Extension:extension UL_Accolade_Ouvrante Definitions:definitions 
-			  		UL_Accolade_Fermante
-				{: :}*/
+			  |*/ UL_Class Classe:declaration /*Extension:extension*/ UL_Accolade_Ouvrante Definitions:definitions UL_Accolade_Fermante
+				{: 
+					RESULT = new Classe(declaration, definitions);
+				:}
+			  | UL_Final UL_Class Classe:declaration /*Extension:extension*/ UL_Accolade_Ouvrante Definitions:definitions UL_Accolade_Fermante
+				{:
+					RESULT = new Classe(declaration, Keyword.FINAL, definitions);
+				:}
+			  | UL_Abstract UL_Class Classe:declaration /*Extension:extension*/ UL_Accolade_Ouvrante Definitions:definitions UL_Accolade_Fermante
+				{: 
+					RESULT = new Classe(declaration, Keyword.ABSTRACT, definitions);
+				:}
 			   ;
-
-Decl ::= Identifiant:identifiant {::}
-		 | Identifiant:identifiant UL_Inferieur ListeIdentiteExtends UL_Superieur {::}
-		 ;
-		 
+			   
+Classe ::= Identifiant:identifiant 
+					{:
+						RESULT = new ClasseDeclaration(identifiant.getLeft());
+					:}
+			       /* | Identifiant:identifiant UL_Inferieur ListeIdentiteExtends UL_Superieur {::}
+		 			*/
+		 			;
+/*
 ListeIdentiteExtends ::= Identifiant:identifiant {::}
 						 | Identifiant:identifiant UL_Extends ListeInstanciationsEsperluette {::}
 						 | Identifiant:identifiant UL_Virgule ListeIdentiteExtends {::}
@@ -202,18 +238,110 @@ ListeIdentiteExtends ::= Identifiant:identifiant {::}
 ListeIdentiteExtends ::= Instanciation:instanciation {::}
 					     | Instanciation:instanciation UL_Esperluette ListeIdentiteExtends {::}
 					     ;
-					     
+	     
 Extension ::= UL_Extends Instanciation:instanciation {::}
 			  | UL_Extends Instanciation:instanciation UL_Implements Instanciations:instanciations {::}
 			  | UL_Implements Instanciations:instanciations {::}
 			  ;
-
-Definition ::= UL_Public Attribut:attribut {::}; // IL Y A BEAUCOUP DE CAS POSSIBLES
+*/
+Definition ::= UL_Public Attribut:attribut 
+				{:
+					List<Keyword> keywords = new ArrayList<Keyword>();
+					keywords.add(Keyword.PUBLIC);
+					RESULT = new AttributDefinition(keywords,attribut);
+				:}
+				| UL_Private Attribut:attribut 
+				{:
+					List<Keyword> keywords = new ArrayList<Keyword>();
+					keywords.add(Keyword.PRIVATE);
+					RESULT = new AttributDefinition(keywords,attribut);
+				:}
+				| UL_Public UL_Static Attribut:attribut 
+				{:
+					List<Keyword> keywords = new ArrayList<Keyword>();
+					keywords.add(Keyword.PUBLIC);
+					keywords.add(Keyword.STATIC);
+					RESULT = new AttributDefinition(keywords,attribut);
+				:}
+				| UL_Private UL_Static Attribut:attribut 
+				{:
+					List<Keyword> keywords = new ArrayList<Keyword>();
+					keywords.add(Keyword.PRIVATE);
+					keywords.add(Keyword.STATIC);
+					RESULT = new AttributDefinition(keywords,attribut);
+				:}
+				| UL_Public UL_Final Attribut:attribut 
+				{:
+					List<Keyword> keywords = new ArrayList<Keyword>();
+					keywords.add(Keyword.PUBLIC);
+					keywords.add(Keyword.FINAL);
+					RESULT = new AttributDefinition(keywords,attribut);
+				:}
+				| UL_Private UL_Final Attribut:attribut 
+				{:
+					List<Keyword> keywords = new ArrayList<Keyword>();
+					keywords.add(Keyword.PRIVATE);
+					keywords.add(Keyword.FINAL);
+					RESULT = new AttributDefinition(keywords,attribut);
+				:}
+				| UL_Public UL_Static UL_Final Attribut:attribut 
+				{:
+					List<Keyword> keywords = new ArrayList<Keyword>();
+					keywords.add(Keyword.PUBLIC);
+					keywords.add(Keyword.STATIC);
+					keywords.add(Keyword.FINAL);
+					RESULT = new AttributDefinition(keywords,attribut);
+				:}
+				| UL_Private UL_Static UL_Final Attribut:attribut 
+				{:
+					List<Keyword> keywords = new ArrayList<Keyword>();
+					keywords.add(Keyword.PRIVATE);
+					keywords.add(Keyword.STATIC);
+					keywords.add(Keyword.FINAL);
+					RESULT = new AttributDefinition(keywords,attribut);
+				:}
+				| UL_Public Methode:methode
+				{:
+					List<Keyword> keywords = new ArrayList<Keyword>();
+					keywords.add(Keyword.PUBLIC);
+					RESULT = new MethodeDefinition(keywords,methode);
+				:}
+				| UL_Private Methode:methode
+				{:
+					List<Keyword> keywords = new ArrayList<Keyword>();
+					keywords.add(Keyword.PRIVATE);
+					RESULT = new MethodeDefinition(keywords,methode);
+				:}
+				| UL_Public UL_Static Methode:methode
+				{:
+					List<Keyword> keywords = new ArrayList<Keyword>();
+					keywords.add(Keyword.PUBLIC);
+					keywords.add(Keyword.STATIC);
+					RESULT = new MethodeDefinition(keywords,methode);
+				:}
+				| UL_Private UL_Static Methode:methode
+				{:
+					List<Keyword> keywords = new ArrayList<Keyword>();
+					keywords.add(Keyword.PRIVATE);
+					keywords.add(Keyword.STATIC);
+					RESULT = new MethodeDefinition(keywords,methode);
+				:}
+				
+				; // IL Y A BEAUCOUP DE CAS POSSIBLES
 		  
-Definitions ::= Definition:definition {::}
-				| Definition:definition Definitions:definitions {::}
+Definitions ::= Definitions:definitions Definition:definition 
+				{:
+					definitions.add(definition);
+					RESULT = definitions;
+				:}
+				| Definition:definition
+				{:
+					List<Definition> _definitions = new LinkedList<Definition>(); 
+					_definitions.add(definition); 
+					RESULT = _definitions; 
+				:}
 				;
-
+/*
 Instanciation ::= Identifiant:identifiant {::} // CONFLIT AVEC DECL
 				 |Identifiant:identifiant UL_Inferieur Instanciations:instanciations UL_Superieur {::}
 				;
@@ -221,21 +349,57 @@ Instanciation ::= Identifiant:identifiant {::} // CONFLIT AVEC DECL
 Instanciations ::= Instanciation:instanciation {::}
 				   | Instanciation:instanciation UL_Virgule Instanciations:instanciations {::}
 				   ;
+*/
 
-Attribut ::= Type:type Identifiant:identifiant {::};
+Attribut ::= Type:type Identifiant:identifiant UL_Point_Virgule 
+			{:
+				Type _type = identifiant.getRight();
+				if (_type == null) {
+					_type = type;
+				} else {
+					_type = ((PartialType)_type).complete( type );
+ 				}
+				RESULT = new AttributDeclaration( identifiant.getLeft(), _type);
+			:};
 
-Entete ::=   UL_Type_Vide Identifiant:identifiant UL_Parenthese_Ouvrante UL_Parenthese_Fermante {::}
-		   | UL_Type_Vide Identifiant:identifiant UL_Parenthese_Ouvrante Parameters:parametres UL_Parenthese_Fermante {::}
-		   | Type:type Identifiant:identifiant UL_Parenthese_Ouvrante UL_Parenthese_Fermante {::}
-		   | Type:type Identifiant:identifiant UL_Parenthese_Ouvrante Parameters:parametres UL_Parenthese_Fermante {::}
+
+Entete ::=   UL_Type_Vide Identifiant:identifiant UL_Parenthese_Ouvrante UL_Parenthese_Fermante 
+			{:
+				RESULT = new Entete(identifiant.getLeft(), AtomicType.VoidType);
+			:}
+		   | UL_Type_Vide Identifiant:identifiant UL_Parenthese_Ouvrante Parameters:parametres UL_Parenthese_Fermante 
+		   {:
+				RESULT = new Entete(identifiant.getLeft(), AtomicType.VoidType, parametres);
+			:}
+		   | Type:type Identifiant:identifiant UL_Parenthese_Ouvrante UL_Parenthese_Fermante 
+		   {:	
+				RESULT = new Entete(identifiant.getLeft(), type);
+			:}
+		   | Type:type Identifiant:identifiant UL_Parenthese_Ouvrante Parameters:parametres UL_Parenthese_Fermante 
+		   {:
+				RESULT = new Entete(identifiant.getLeft(), type, parametres);
+			:}
 		   ;
-
+/*
 Entetes ::= Entete:entete UL_Point_Virgule {::}
 			| Entete:entete UL_Point_Virgule Entetes:entetes {::};
-
-Methode ::= Entete:entete Bloc:bloc {::} // Bloc pour corps, c'est ok ?
-			| UL_Final Entete:entete Bloc:bloc {::}
-			| UL_Abstract Entete:entete Bloc:bloc {::}
+*/
+Methode ::=  Entete:entete Bloc:bloc 
+			{:
+				RESULT = new MethodeDeclaration(entete, bloc);
+			:}
+			| UL_Final Entete:entete Bloc:bloc 
+			{:
+				List<Keyword> keywords = new ArrayList<Keyword>();
+				keywords.add(Keyword.FINAL);
+				RESULT = new MethodeDeclaration(entete, keywords, bloc);
+			:}
+			| UL_Abstract Entete:entete Bloc:bloc 
+			{:
+				List<Keyword> keywords = new ArrayList<Keyword>();
+				keywords.add(Keyword.ABSTRACT);
+				RESULT = new MethodeDeclaration(entete, keywords, bloc);
+			:}
 			;
 
 
@@ -324,12 +488,12 @@ Type ::= Atomique:atomique
 				RESULT = new NamedType( nom ); 
 			:}
 			
-		
+		/*
 		| Instanciation:instanciation 
 			{:
 				// TODO
 			:}	
-		
+		*/
 /*	Bloc	| UL_Enregistrement UL_Identificateur:nom UL_Accolade_Ouvrante Champs:champs UL_Accolade_Fermante
 			{: 
 				RESULT = new RecordType( nom, champs ); 

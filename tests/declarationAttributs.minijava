@@ -1,0 +1,6 @@
+class ClasseTest {
+	public int m;
+	private static boolean b;
+	public final int x;
+	private static final String s;
+}

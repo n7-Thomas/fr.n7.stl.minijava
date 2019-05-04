@@ -1,0 +1,10 @@
+class ClasseTest {
+	public void methode1(int x, int y){
+		int z = x + y;
+		print z;	
+	}
+	
+	public int methode2(int x, int y){
+		return x + y;
+	}
+}

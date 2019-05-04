@@ -1,0 +1,10 @@
+class ClasseTest {
+	public void methode1(){}
+	public int methode2(){}
+	public final void methode3(){}
+	public abstract void methode4(){}
+	public final int methode5(){}
+	public abstract String methode6(){}
+	public void methode7(int x){}
+	public final int methode8(String s){}
+}

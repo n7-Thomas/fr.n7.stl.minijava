@@ -1,0 +1,3 @@
+class ClasseTest {}
+abstract class ClasseAbstract {}
+final class ClasseFinal {}
