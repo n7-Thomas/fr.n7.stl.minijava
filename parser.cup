@@ -72,7 +72,7 @@ terminal				UL_Si, UL_Sinon, UL_Tant_Que, UL_Nouveau, UL_Afficher, UL_Retour;
 terminal                UL_Interface, UL_Class;
 terminal                UL_Extends, UL_Implements;
 terminal                UL_Final, UL_Abstract, UL_Public, UL_Private, UL_Static;
-
+terminal                UL_Main;
 terminal				UL_Definition_Constante, UL_Definition_Type, UL_Enregistrement, UL_Enumeration;
 terminal				UL_Type_Booleen, UL_Type_Caractere, UL_Type_Chaine, UL_Type_Entier, UL_Type_Flottant, UL_Type_Vide;
 terminal String		UL_Identificateur, UL_Chaine, UL_Caractere;
@@ -99,12 +99,14 @@ non terminal AssignableExpression		Affectable;
 non terminal List<Objet>                Programme;
 non terminal List<Objet>                Objets;
 non terminal Objet 					    Objet;
+non terminal MainClasse                 MainClasse;
 non terminal InterfaceDeclaration       Interface;
 non terminal ClasseDeclaration		    Classe;
 non terminal Definition                 Definition;
 non terminal List<Definition>           Definitions;
 non terminal AttributDeclaration        Attribut;
 non terminal MethodeDeclaration         Methode; // OK 
+non terminal MainMethodeDeclaration     MainMethode;
 non terminal ConstructeurDeclaration    Constructeur; 
 non terminal Entete                     Entete; // OK
 non terminal List<Entete>               Entetes;
@@ -175,13 +177,20 @@ precedence left UL_Crochet_Ouvrant, UL_Point, UL_Parenthese_Ouvrante;
 	Un fichier représente plusieurs objets d'affilés
 */
 
-Programme ::= Objets:objets 
+Programme ::= MainClasse:mainClasse Objets:objets 
 			{:
 				System.out.println("Nouveau programme : ");
+				System.out.println(mainClasse);				
 				for(Objet objet : objets){
 					System.out.println(objet);
 				}
-			:};
+			:} 
+			| MainClasse:mainClasse
+			{:
+				System.out.println("Nouveau programme : ");
+				System.out.println(mainClasse);				
+			:} 
+			;
 
 
 Objets ::= Objets:objets Objet:objet
@@ -231,8 +240,18 @@ Objet ::=     UL_Interface Interface:declaration /*UL_Extends Instanciations:ins
 			  | UL_Abstract UL_Class Classe:declaration /*Extension:extension*/ UL_Accolade_Ouvrante Definitions:definitions UL_Accolade_Fermante
 				{: 
 					RESULT = new Classe(declaration, Keyword.ABSTRACT, definitions);
-				:}
+				:}	   
 			   ;
+
+MainMethode ::= UL_Public UL_Static UL_Type_Vide UL_Main UL_Parenthese_Ouvrante Parameters:parametres UL_Parenthese_Fermante Bloc:corps
+				{:
+					RESULT = new MainMethodeDeclaration(parametres, corps);
+				:}
+				| UL_Public UL_Static UL_Type_Vide UL_Main UL_Parenthese_Ouvrante UL_Parenthese_Fermante Bloc:corps
+				{:
+					RESULT = new MainMethodeDeclaration(corps);
+				:};
+		
 		
 Interface ::= UL_Identificateur:nom
 			{:
@@ -241,7 +260,14 @@ Interface ::= UL_Identificateur:nom
 			 /* | UL_Identificateur:nom UL_Inferieur ListeIdentiteExtends UL_Superieur {::}
 		 	*/
 		 	;		
-	   
+
+MainClasse ::= UL_Class UL_Identificateur:nom UL_Accolade_Ouvrante MainMethode:main UL_Accolade_Fermante
+			  {:
+					MainClasseDeclaration mcd = new MainClasseDeclaration(nom);
+					RESULT = new MainClasse(mcd, main);
+			  :}
+			  ;	 
+
 Classe ::=  UL_Identificateur:nom
 			{:
 				RESULT = new ClasseDeclaration(nom);

@@ -1,31 +1,8 @@
-interface Inter {
-	void afficherX();
-	int addX(int y);
+class MainClasse {
+	public static void main (int x) 
+	{
+		
+	}
 }
-
-class ClasseTest {
-	private int x;
-	
-	public ClasseTest () {
-		x = 3;
-	}
-	
-	public ClasseTest (int y) {
-		x = y;
-	}
-	
-	// NE DOIT PAS PASSER LE RESOLVE
-	public azeae(){
-	
-	}
-	
-	public void afficherX(){
-		print x;
-	}
-	
-	public int addX(int y){
-		x = x + y;
-	}
-}	
 
 
