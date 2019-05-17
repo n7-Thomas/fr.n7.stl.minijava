@@ -1,3 +1,4 @@
+class MainClasse { public static void main () {} }
 class ClasseTest {
 	public void methode1(){}
 	public int methode2(){}

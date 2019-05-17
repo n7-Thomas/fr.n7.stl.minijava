@@ -1,3 +1,5 @@
+class MainClasse { public static void main () {} }
+
 interface Inter {
 	void afficherX();
 	int addX(int y);

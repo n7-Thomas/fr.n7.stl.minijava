@@ -111,7 +111,8 @@ public class VariableDeclaration implements Declaration, Instruction {
 			return false;
 		}else{
 			boolean ok = this.value.resolve(_scope);
-			if(ok){
+			boolean okType = this.type.resolve(_scope);
+			if(ok && okType){
 				_scope.register(this);
 				return true;
 			} else {

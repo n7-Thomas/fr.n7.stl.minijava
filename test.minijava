@@ -1,8 +1,9 @@
-class MainClasse {
-	public static void main (int x) 
-	{
-		
+class MC { public static void main () {} }
+class C1 {
+	private int a;
+	
+	public C1(){
+		this.a = 1;
 	}
+	
 }
-
-

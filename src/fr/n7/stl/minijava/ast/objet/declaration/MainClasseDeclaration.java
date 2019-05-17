@@ -10,17 +10,22 @@ import fr.n7.stl.tam.ast.TAMFactory;
 public class MainClasseDeclaration implements ObjetDeclaration {
 
 	private String name;
-	
-	//private Type type;
 
-	public MainClasseDeclaration(String _name) {
+	private MainMethodeDeclaration mainMethode;
+
+	public MainClasseDeclaration(String _name, MainMethodeDeclaration _mainMethode) {
 		this.name = _name;
+		this.mainMethode = _mainMethode;
 	}
 
 	@Override
 	public boolean resolve(HierarchicalScope<Declaration> _scope) {
-		// TODO Auto-generated method stub
-		return false;
+		if (_scope.contains(this.name)) {
+			return false;
+		} else {
+			_scope.register(this);
+			return true;
+		}
 	}
 
 	@Override
@@ -48,10 +53,10 @@ public class MainClasseDeclaration implements ObjetDeclaration {
 
 	@Override
 	public Type getType() {
-		//TODO
+		// TODO
 		return null;
 	}
-	
+
 	public String toString() {
 		return this.getName();
 	}

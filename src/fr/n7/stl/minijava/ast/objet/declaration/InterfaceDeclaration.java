@@ -1,5 +1,8 @@
 package fr.n7.stl.minijava.ast.objet.declaration;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
 import fr.n7.stl.minijava.ast.type.Type;
@@ -10,17 +13,25 @@ import fr.n7.stl.tam.ast.TAMFactory;
 public class InterfaceDeclaration implements ObjetDeclaration {
 
 	private String name;
-	
-	//private Type type;
 
-	public InterfaceDeclaration(String _name) {
+	private List<Entete> entetes;
+
+	public InterfaceDeclaration(String _name, List<Entete> _entetes) {
 		this.name = _name;
+		if(_entetes != null)
+			this.entetes = _entetes;
+		else
+			this.entetes = new ArrayList<Entete>();
 	}
 
 	@Override
 	public boolean resolve(HierarchicalScope<Declaration> _scope) {
-		// TODO Auto-generated method stub
-		return false;
+		if(!_scope.contains(this.name)){
+			_scope.register(this);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override

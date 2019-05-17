@@ -31,9 +31,15 @@ import fr.n7.stl.tam.ast.*;
 parser code {:
 	protected Lexer lexer;
 	protected String name;
+	//protected FonctionDeclaration current;
+	protected ObjetDeclaration objetCourant;
+	protected String nomCourant;
 	public Parser(String _name) {
 		this();
 		this.name = _name;
+		this.objetCourant = null;
+		//this.current = null;
+		this.nomCourant = "";
 	}
 :}
 
@@ -72,11 +78,11 @@ terminal				UL_Si, UL_Sinon, UL_Tant_Que, UL_Nouveau, UL_Afficher, UL_Retour;
 terminal                UL_Interface, UL_Class;
 terminal                UL_Extends, UL_Implements;
 terminal                UL_Final, UL_Abstract, UL_Public, UL_Private, UL_Static;
-terminal                UL_Main;
+terminal                UL_Main, UL_This;
 terminal				UL_Definition_Constante, UL_Definition_Type, UL_Enregistrement, UL_Enumeration;
 terminal				UL_Type_Booleen, UL_Type_Caractere, UL_Type_Chaine, UL_Type_Entier, UL_Type_Flottant, UL_Type_Vide;
-terminal String		UL_Identificateur, UL_Chaine, UL_Caractere;
-terminal String		UL_Nombre_Entier, UL_Nombre_Flottant, UL_Nul, UL_Vrai, UL_Faux; // Valeur transmise par l'analyseur lexical
+terminal String		    UL_Identificateur, UL_Chaine, UL_Caractere;
+terminal String		    UL_Nombre_Entier, UL_Nombre_Flottant, UL_Nul, UL_Vrai, UL_Faux; // Valeur transmise par l'analyseur lexical
 
 /* Non terminaux avec type renvoyé par actions sémantiques (RESULT = ...) */
 //non terminal Block						Program;
@@ -96,24 +102,21 @@ non terminal Expression 				Expression;
 non terminal AssignableExpression		Affectable;
 
 // Définir ici les non terminaux
-non terminal List<Objet>                Programme;
-non terminal List<Objet>                Objets;
-non terminal Objet 					    Objet;
-non terminal MainClasse                 MainClasse;
-non terminal InterfaceDeclaration       Interface;
-non terminal ClasseDeclaration		    Classe;
+non terminal List<ObjetDeclaration>     Programme;
+non terminal List<ObjetDeclaration>     Objets;
+non terminal ObjetDeclaration    	    Objet;
+non terminal MainClasseDeclaration      MainClasse;
+non terminal String                     Interface;
+non terminal String          		    Classe;
 non terminal Definition                 Definition;
 non terminal List<Definition>           Definitions;
-non terminal AttributDeclaration        Attribut;
-non terminal MethodeDeclaration         Methode; // OK 
 non terminal MainMethodeDeclaration     MainMethode;
-non terminal ConstructeurDeclaration    Constructeur; 
 non terminal Entete                     Entete; // OK
 non terminal List<Entete>               Entetes;
 
 // TODO
 //non terminal Expression   		  Extension;
-//non terminal Instruction			  Instanciation;
+non terminal Instanciation			  Instanciation;
 //non terminal List<Instanciation>    Instanciations;
 
 //non terminal List<ParameterDeclaration>	Parameters; OK AVEC L'ANCIEN
@@ -180,15 +183,41 @@ precedence left UL_Crochet_Ouvrant, UL_Point, UL_Parenthese_Ouvrante;
 Programme ::= MainClasse:mainClasse Objets:objets 
 			{:
 				System.out.println("Nouveau programme : ");
-				System.out.println(mainClasse);				
-				for(Objet objet : objets){
-					System.out.println(objet);
+				//System.out.println(mainClasse);				
+				
+				SymbolTable tds = new SymbolTable();
+			   
+				for(ObjetDeclaration objet : objets){
+					//System.out.println(objet);
+			
+					if(objet.resolve(tds)){
+						System.out.println("RESOLVE " + objet.getName() + " OK");
+					} else {
+						System.out.println("RESOLVE " + objet.getName() + " KO");
+					}	
 				}
+						
+				if(mainClasse.resolve(tds)){
+					System.out.println("RESOLVE OK");
+				} else {
+					System.out.println("RESOLVE KO");
+				}		
+				
+				System.out.println("\n\n"); 
+				System.out.println(tds.toString());
 			:} 
 			| MainClasse:mainClasse
 			{:
 				System.out.println("Nouveau programme : ");
-				System.out.println(mainClasse);				
+				//System.out.println(mainClasse);
+				SymbolTable tds = new SymbolTable();		
+				if(mainClasse.resolve(tds)){
+					System.out.println("RESOLVE OK");
+				} else {
+					System.out.println("RESOLVE KO");
+				}	
+
+				System.out.println("tds " + tds.toString());	
 			:} 
 			;
 
@@ -200,7 +229,7 @@ Objets ::= Objets:objets Objet:objet
 			:}
 			| Objet:objet
 			{:
-				List<Objet> _objets = new LinkedList<Objet>(); 
+				List<ObjetDeclaration> _objets = new LinkedList<ObjetDeclaration>(); 
 				_objets.add(objet); 
 				RESULT = _objets; 
 			:}
@@ -213,33 +242,53 @@ Objet :
 - TODO: final class declaration extension { definition }
 - TODO: abstract class declaration extension { definition }
 */ 
-Objet ::=     UL_Interface Interface:declaration /*UL_Extends Instanciations:instanciations*/ UL_Accolade_Ouvrante  Entetes:entetes UL_Accolade_Fermante
+Objet ::=     UL_Interface Interface:nom /*UL_Extends Instanciations:instanciations*/ UL_Accolade_Ouvrante  Entetes:entetes UL_Accolade_Fermante
 				{: 
-					RESULT = new Interface(declaration, entetes);
+					objetCourant = new InterfaceDeclaration(nom, entetes);
+					RESULT = objetCourant;
 				:}
 			  /*| UL_Interface Interface:declaration UL_Accolade_Ouvrante Entetes:entetes UL_Accolade_Fermante
 				{: 
 					RESULT = new Interface(declaration, entetes);
 				:}*/ 
-			  | UL_Interface Interface:declaration /*UL_Extends Instanciations:instanciations */ UL_Accolade_Ouvrante UL_Accolade_Fermante
+			  | UL_Interface Interface:nom /*UL_Extends Instanciations:instanciations */ UL_Accolade_Ouvrante UL_Accolade_Fermante
 				{: 
-					RESULT = new Interface(declaration);
+					objetCourant = new InterfaceDeclaration(nom, null);
+					RESULT = objetCourant;
 				:}
 			  /*| UL_Interface Interface:declaration UL_Accolade_Ouvrante UL_Accolade_Fermante
 				{: 
 					RESULT = new Interface(declaration);
 				:} */
-			  | UL_Class Classe:declaration /*Extension:extension*/ UL_Accolade_Ouvrante Definitions:definitions UL_Accolade_Fermante
+			  | UL_Class Classe:nom /*Extension:extension*/ UL_Accolade_Ouvrante Definitions:definitions UL_Accolade_Fermante
 				{: 
-					RESULT = new Classe(declaration, definitions);
+					objetCourant = new ClasseDeclaration(nom, definitions);
+					RESULT = objetCourant;
 				:}
-			  | UL_Final UL_Class Classe:declaration /*Extension:extension*/ UL_Accolade_Ouvrante Definitions:definitions UL_Accolade_Fermante
+			  | UL_Final UL_Class Classe:nom /*Extension:extension*/ UL_Accolade_Ouvrante Definitions:definitions UL_Accolade_Fermante
+				{:	
+					objetCourant = new ClasseDeclaration(nom, definitions);
+					RESULT = objetCourant;
+				:}
+			  | UL_Abstract UL_Class Classe:nom /*Extension:extension*/ UL_Accolade_Ouvrante Definitions:definitions UL_Accolade_Fermante
+				{: 
+					objetCourant = new ClasseDeclaration(nom, Keyword.ABSTRACT, definitions);
+					RESULT = objetCourant;
+				:}	
+			  | UL_Class Classe:nom /*Extension:extension*/ UL_Accolade_Ouvrante UL_Accolade_Fermante
+				{: 
+					objetCourant = new ClasseDeclaration(nom, null);
+					RESULT = objetCourant;
+				:}
+			  | UL_Final UL_Class Classe:nom /*Extension:extension*/ UL_Accolade_Ouvrante UL_Accolade_Fermante
 				{:
-					RESULT = new Classe(declaration, Keyword.FINAL, definitions);
+					objetCourant = new ClasseDeclaration(nom, null);
+					RESULT = objetCourant;
 				:}
-			  | UL_Abstract UL_Class Classe:declaration /*Extension:extension*/ UL_Accolade_Ouvrante Definitions:definitions UL_Accolade_Fermante
+			  | UL_Abstract UL_Class Classe:nom /*Extension:extension*/ UL_Accolade_Ouvrante UL_Accolade_Fermante
 				{: 
-					RESULT = new Classe(declaration, Keyword.ABSTRACT, definitions);
+					objetCourant = new ClasseDeclaration(nom, Keyword.ABSTRACT, null);
+					RESULT = objetCourant;
 				:}	   
 			   ;
 
@@ -255,7 +304,7 @@ MainMethode ::= UL_Public UL_Static UL_Type_Vide UL_Main UL_Parenthese_Ouvrante 
 		
 Interface ::= UL_Identificateur:nom
 			{:
-				RESULT = new InterfaceDeclaration(nom);
+				RESULT = nom;
 			:}
 			 /* | UL_Identificateur:nom UL_Inferieur ListeIdentiteExtends UL_Superieur {::}
 		 	*/
@@ -263,14 +312,15 @@ Interface ::= UL_Identificateur:nom
 
 MainClasse ::= UL_Class UL_Identificateur:nom UL_Accolade_Ouvrante MainMethode:main UL_Accolade_Fermante
 			  {:
-					MainClasseDeclaration mcd = new MainClasseDeclaration(nom);
-					RESULT = new MainClasse(mcd, main);
+					nomCourant = nom;
+					RESULT = new MainClasseDeclaration(nom, main);
 			  :}
 			  ;	 
 
 Classe ::=  UL_Identificateur:nom
 			{:
-				RESULT = new ClasseDeclaration(nom);
+				nomCourant = nom;
+				RESULT = nom;
 			:}
 			  /* | UL_Identificateur:nom UL_Inferieur ListeIdentiteExtends UL_Superieur {::}
 		 	*/
@@ -293,101 +343,221 @@ Extension ::= UL_Extends Instanciation:instanciation {::}
 			  ;
 */	
 Definition ::= 	/* ATTRIBUTS */
-				UL_Public Attribut:attribut 
+				UL_Public Type:type Identifiant:identifiant UL_Point_Virgule  
 				{:
+					Type _type = identifiant.getRight();
+					if (_type == null) {
+						_type = type;
+					} else {
+						_type = ((PartialType)_type).complete( type );
+ 					}
 					List<Keyword> keywords = new ArrayList<Keyword>();
 					keywords.add(Keyword.PUBLIC);
-					RESULT = new AttributDefinition(keywords,attribut);
+					RESULT = new AttributDeclaration(keywords, _type, nomCourant, identifiant.getLeft());
 				:}
-				| UL_Private Attribut:attribut 
+				| UL_Private Type:type Identifiant:identifiant UL_Point_Virgule  
 				{:
+					Type _type = identifiant.getRight();
+					if (_type == null) {
+						_type = type;
+					} else {
+						_type = ((PartialType)_type).complete( type );
+ 					}
 					List<Keyword> keywords = new ArrayList<Keyword>();
 					keywords.add(Keyword.PRIVATE);
-					RESULT = new AttributDefinition(keywords,attribut);
+					RESULT = new AttributDeclaration(keywords, _type,  nomCourant, identifiant.getLeft());
 				:}
-				| UL_Public UL_Static Attribut:attribut 
+				| UL_Public UL_Static Type:type Identifiant:identifiant UL_Point_Virgule
 				{:
-					List<Keyword> keywords = new ArrayList<Keyword>();
-					keywords.add(Keyword.PUBLIC);
-					keywords.add(Keyword.STATIC);
-					RESULT = new AttributDefinition(keywords,attribut);
-				:}
-				| UL_Private UL_Static Attribut:attribut 
-				{:
-					List<Keyword> keywords = new ArrayList<Keyword>();
-					keywords.add(Keyword.PRIVATE);
-					keywords.add(Keyword.STATIC);
-					RESULT = new AttributDefinition(keywords,attribut);
-				:}
-				| UL_Public UL_Final Attribut:attribut 
-				{:
-					List<Keyword> keywords = new ArrayList<Keyword>();
-					keywords.add(Keyword.PUBLIC);
-					keywords.add(Keyword.FINAL);
-					RESULT = new AttributDefinition(keywords,attribut);
-				:}
-				| UL_Private UL_Final Attribut:attribut 
-				{:
-					List<Keyword> keywords = new ArrayList<Keyword>();
-					keywords.add(Keyword.PRIVATE);
-					keywords.add(Keyword.FINAL);
-					RESULT = new AttributDefinition(keywords,attribut);
-				:}
-				| UL_Public UL_Static UL_Final Attribut:attribut 
-				{:
+					Type _type = identifiant.getRight();
+					if (_type == null) {
+						_type = type;
+					} else {
+						_type = ((PartialType)_type).complete( type );
+ 					}
 					List<Keyword> keywords = new ArrayList<Keyword>();
 					keywords.add(Keyword.PUBLIC);
 					keywords.add(Keyword.STATIC);
-					keywords.add(Keyword.FINAL);
-					RESULT = new AttributDefinition(keywords,attribut);
+					RESULT = new AttributDeclaration(keywords, _type,  nomCourant, identifiant.getLeft());
 				:}
-				| UL_Private UL_Static UL_Final Attribut:attribut 
+				| UL_Private UL_Static Type:type Identifiant:identifiant UL_Point_Virgule
 				{:
+					Type _type = identifiant.getRight();
+					if (_type == null) {
+						_type = type;
+					} else {
+						_type = ((PartialType)_type).complete( type );
+ 					}
+					List<Keyword> keywords = new ArrayList<Keyword>();
+					keywords.add(Keyword.PRIVATE);
+					keywords.add(Keyword.STATIC);
+					RESULT = new AttributDeclaration(keywords, _type,  nomCourant, identifiant.getLeft());
+				:}
+				| UL_Public UL_Final Type:type Identifiant:identifiant UL_Point_Virgule 
+				{:
+					Type _type = identifiant.getRight();
+					if (_type == null) {
+						_type = type;
+					} else {
+						_type = ((PartialType)_type).complete( type );
+ 					}
+					List<Keyword> keywords = new ArrayList<Keyword>();
+					keywords.add(Keyword.PUBLIC);
+					keywords.add(Keyword.FINAL);
+					RESULT = new AttributDeclaration(keywords, _type, nomCourant, identifiant.getLeft());
+				:}
+				| UL_Private UL_Final Type:type Identifiant:identifiant UL_Point_Virgule
+				{:
+					Type _type = identifiant.getRight();
+					if (_type == null) {
+						_type = type;
+					} else {
+						_type = ((PartialType)_type).complete( type );
+ 					}
+					List<Keyword> keywords = new ArrayList<Keyword>();
+					keywords.add(Keyword.PRIVATE);
+					keywords.add(Keyword.FINAL);
+					RESULT = new AttributDeclaration(keywords, _type, nomCourant, identifiant.getLeft());
+				:}
+				| UL_Public UL_Static UL_Final Type:type Identifiant:identifiant UL_Point_Virgule
+				{:
+					Type _type = identifiant.getRight();
+					if (_type == null) {
+						_type = type;
+					} else {
+						_type = ((PartialType)_type).complete( type );
+ 					}
+					List<Keyword> keywords = new ArrayList<Keyword>();
+					keywords.add(Keyword.PUBLIC);
+					keywords.add(Keyword.STATIC);
+					keywords.add(Keyword.FINAL);
+					RESULT = new AttributDeclaration(keywords, _type, nomCourant, identifiant.getLeft());
+				:}
+				| UL_Private UL_Static UL_Final Type:type Identifiant:identifiant UL_Point_Virgule
+				{:
+					Type _type = identifiant.getRight();
+					if (_type == null) {
+						_type = type;
+					} else {
+						_type = ((PartialType)_type).complete( type );
+ 					}
 					List<Keyword> keywords = new ArrayList<Keyword>();
 					keywords.add(Keyword.PRIVATE);
 					keywords.add(Keyword.STATIC);
 					keywords.add(Keyword.FINAL);
-					RESULT = new AttributDefinition(keywords,attribut);
+					RESULT = new AttributDeclaration(keywords, _type, nomCourant, identifiant.getLeft());
 				:}
 				/* METHODES */
-				| UL_Public Methode:methode
+				| UL_Public Entete:entete Bloc:bloc
 				{:
 					List<Keyword> keywords = new ArrayList<Keyword>();
 					keywords.add(Keyword.PUBLIC);
-					RESULT = new MethodeDefinition(keywords,methode);
+					RESULT = new MethodeDeclaration(keywords, entete, bloc);
 				:}
-				| UL_Private Methode:methode
+				| UL_Private Entete:entete Bloc:bloc
 				{:
 					List<Keyword> keywords = new ArrayList<Keyword>();
 					keywords.add(Keyword.PRIVATE);
-					RESULT = new MethodeDefinition(keywords,methode);
+					RESULT = new MethodeDeclaration(keywords, entete, bloc);
 				:}
-				| UL_Public UL_Static Methode:methode
+				| UL_Public UL_Static Entete:entete Bloc:bloc
 				{:
 					List<Keyword> keywords = new ArrayList<Keyword>();
 					keywords.add(Keyword.PUBLIC);
 					keywords.add(Keyword.STATIC);
-					RESULT = new MethodeDefinition(keywords,methode);
+					RESULT = new MethodeDeclaration(keywords, entete, bloc);
 				:}
-				| UL_Private UL_Static Methode:methode
+				| UL_Private UL_Static Entete:entete Bloc:bloc
 				{:
 					List<Keyword> keywords = new ArrayList<Keyword>();
 					keywords.add(Keyword.PRIVATE);
 					keywords.add(Keyword.STATIC);
-					RESULT = new MethodeDefinition(keywords,methode);
+					RESULT = new MethodeDeclaration(keywords, entete, bloc);
 				:}
-				| UL_Public Constructeur:constructeur 
+				| UL_Public UL_Abstract Entete:entete Bloc:bloc
 				{:
 					List<Keyword> keywords = new ArrayList<Keyword>();
 					keywords.add(Keyword.PUBLIC);
-					RESULT = new ConstructeurDefinition(keywords, constructeur);
+					keywords.add(Keyword.ABSTRACT);
+					RESULT = new MethodeDeclaration(keywords, entete, bloc);
+				:}
+				| UL_Private UL_Abstract Entete:entete Bloc:bloc
+				{:
+					List<Keyword> keywords = new ArrayList<Keyword>();
+					keywords.add(Keyword.PRIVATE);
+					keywords.add(Keyword.ABSTRACT);
+					RESULT = new MethodeDeclaration(keywords, entete, bloc);
+				:}
+				| UL_Public UL_Static UL_Abstract Entete:entete Bloc:bloc
+				{:
+					List<Keyword> keywords = new ArrayList<Keyword>();
+					keywords.add(Keyword.PUBLIC);
+					keywords.add(Keyword.STATIC);
+					keywords.add(Keyword.ABSTRACT);
+					RESULT = new MethodeDeclaration(keywords, entete, bloc);
+				:}
+				| UL_Private UL_Static UL_Abstract Entete:entete Bloc:bloc
+				{:
+					List<Keyword> keywords = new ArrayList<Keyword>();
+					keywords.add(Keyword.PRIVATE);
+					keywords.add(Keyword.STATIC);
+					keywords.add(Keyword.ABSTRACT);
+					RESULT = new MethodeDeclaration(keywords, entete, bloc);
+				:}
+				| UL_Public UL_Final Entete:entete Bloc:bloc
+				{:
+					List<Keyword> keywords = new ArrayList<Keyword>();
+					keywords.add(Keyword.PUBLIC);
+					keywords.add(Keyword.FINAL);
+					RESULT = new MethodeDeclaration(keywords, entete, bloc);
+				:}
+				| UL_Private UL_Final Entete:entete Bloc:bloc
+				{:
+					List<Keyword> keywords = new ArrayList<Keyword>();
+					keywords.add(Keyword.PRIVATE);
+					keywords.add(Keyword.FINAL);
+					RESULT = new MethodeDeclaration(keywords, entete, bloc);
+				:}
+				| UL_Public UL_Static UL_Final Entete:entete Bloc:bloc
+				{:
+					List<Keyword> keywords = new ArrayList<Keyword>();
+					keywords.add(Keyword.PUBLIC);
+					keywords.add(Keyword.STATIC);
+					keywords.add(Keyword.FINAL);
+					RESULT = new MethodeDeclaration(keywords, entete, bloc);
+				:}
+				| UL_Private UL_Static UL_Final Entete:entete Bloc:bloc
+				{:
+					List<Keyword> keywords = new ArrayList<Keyword>();
+					keywords.add(Keyword.PRIVATE);
+					keywords.add(Keyword.STATIC);
+					keywords.add(Keyword.FINAL);
+					RESULT = new MethodeDeclaration(keywords, entete, bloc);
+				:}
+				| UL_Public UL_Identificateur:nom UL_Parenthese_Ouvrante UL_Parenthese_Fermante Bloc:corps
+				{:
+					List<Keyword> keywords = new ArrayList<Keyword>();
+					keywords.add(Keyword.PUBLIC);
+					RESULT = new ConstructeurDeclaration(keywords, nomCourant, nom, corps, null);
 				:}	
-				| UL_Private Constructeur:constructeur 
+				| UL_Private UL_Identificateur:nom UL_Parenthese_Ouvrante UL_Parenthese_Fermante Bloc:corps
 				{:
 					List<Keyword> keywords = new ArrayList<Keyword>();
 					keywords.add(Keyword.PRIVATE);
-					RESULT = new ConstructeurDefinition(keywords, constructeur);
-				:}			
+					RESULT = new ConstructeurDeclaration(keywords, nomCourant, nom, corps, null);
+				:}
+				| UL_Public UL_Identificateur:nom UL_Parenthese_Ouvrante Parameters:parametres UL_Parenthese_Fermante Bloc:corps
+				{:
+					List<Keyword> keywords = new ArrayList<Keyword>();
+					keywords.add(Keyword.PUBLIC);
+					RESULT = new ConstructeurDeclaration(keywords, nomCourant, nom, corps, parametres);
+				:}	
+				| UL_Private UL_Identificateur:nom UL_Parenthese_Ouvrante Parameters:parametres UL_Parenthese_Fermante Bloc:corps
+				{:
+					List<Keyword> keywords = new ArrayList<Keyword>();
+					keywords.add(Keyword.PRIVATE);
+					RESULT = new ConstructeurDeclaration(keywords, nomCourant, nom, corps, parametres);
+				:}					
 				; 
 		  
 Definitions ::= Definitions:definitions Definition:definition 
@@ -402,43 +572,34 @@ Definitions ::= Definitions:definitions Definition:definition
 					RESULT = _definitions; 
 				:}
 				;
-/*
-Instanciation ::= Identifiant:identifiant {::} // CONFLIT AVEC DECL
-				 |Identifiant:identifiant UL_Inferieur Instanciations:instanciations UL_Superieur {::}
+
+Instanciation ::= UL_Identificateur:ident 
+				{:
+					RESULT = new Instanciation(ident);
+				:} 
+				 //|Identifiant:identifiant UL_Inferieur Instanciations:instanciations UL_Superieur {::}
 				;
-				
+/*
 Instanciations ::= Instanciation:instanciation {::}
 				   | Instanciation:instanciation UL_Virgule Instanciations:instanciations {::}
 				   ;
 */
 
-Attribut ::= Type:type Identifiant:identifiant UL_Point_Virgule 
-			{:
-				Type _type = identifiant.getRight();
-				if (_type == null) {
-					_type = type;
-				} else {
-					_type = ((PartialType)_type).complete( type );
- 				}
-				RESULT = new AttributDeclaration( identifiant.getLeft(), _type);
-			:};
-
-
 Entete ::=   UL_Type_Vide UL_Identificateur:nom UL_Parenthese_Ouvrante UL_Parenthese_Fermante 
 			{:
-				RESULT = new Entete(nom, AtomicType.VoidType);
+				RESULT = new Entete(nom, nomCourant, AtomicType.VoidType, null);
 			:}
 		   | UL_Type_Vide UL_Identificateur:nom UL_Parenthese_Ouvrante Parameters:parametres UL_Parenthese_Fermante 
 		   {:
-				RESULT = new Entete(nom, AtomicType.VoidType, parametres);
+				RESULT = new Entete(nom,nomCourant, AtomicType.VoidType, parametres);
 			:}
 		   | Type:type UL_Identificateur:nom UL_Parenthese_Ouvrante UL_Parenthese_Fermante 
 		   {:	
-				RESULT = new Entete(nom, type);
+				RESULT = new Entete(nom, nomCourant, type, null);
 			:}
 		   | Type:type UL_Identificateur:nom UL_Parenthese_Ouvrante Parameters:parametres UL_Parenthese_Fermante 
 		   {:
-				RESULT = new Entete(nom, type, parametres);
+				RESULT = new Entete(nom, nomCourant, type, parametres);
 			:}
 		   ;
 
@@ -453,35 +614,7 @@ Entetes ::= Entete:entete UL_Point_Virgule Entetes:entetes
 				_entetes.add(entete);
 				RESULT = _entetes;
 			:};
-
-Methode ::=  Entete:entete Bloc:bloc 
-			{:
-				RESULT = new MethodeDeclaration(entete, bloc);
-			:}
-			| UL_Final Entete:entete Bloc:bloc 
-			{:
-				List<Keyword> keywords = new ArrayList<Keyword>();
-				keywords.add(Keyword.FINAL);
-				RESULT = new MethodeDeclaration(entete, keywords, bloc);
-			:}
-			| UL_Abstract Entete:entete Bloc:bloc 
-			{:
-				List<Keyword> keywords = new ArrayList<Keyword>();
-				keywords.add(Keyword.ABSTRACT);
-				RESULT = new MethodeDeclaration(entete, keywords, bloc);
-			:}
-			;
-
-Constructeur ::= UL_Identificateur:nom UL_Parenthese_Ouvrante UL_Parenthese_Fermante Bloc:corps
-				{:
-					RESULT = new ConstructeurDeclaration(nom, corps);
-				:}
-				| UL_Identificateur:nom UL_Parenthese_Ouvrante Parameters:parametres UL_Parenthese_Fermante Bloc:corps
-				{:
-					RESULT = new ConstructeurDeclaration(nom, corps, parametres);
-				:}
-				;
-
+			
 Bloc ::= UL_Accolade_Ouvrante Instructions:instructions UL_Accolade_Fermante 
 			{: 
 				RESULT = new Block( instructions ); 
@@ -562,17 +695,17 @@ Type ::= Atomique:atomique
 			{: 
 				RESULT = atomique; 
 			:}
-		| UL_Identificateur:nom
+		/*| UL_Identificateur:nom
 			{: 
 				RESULT = new NamedType( nom ); 
 			:}
-			
-		/*
+		*/	
+		
 		| Instanciation:instanciation 
 			{:
-				// TODO
+				RESULT = new ClasseType(instanciation);
 			:}	
-		*/
+		
 /*	Bloc	| UL_Enregistrement UL_Identificateur:nom UL_Accolade_Ouvrante Champs:champs UL_Accolade_Fermante
 			{: 
 				RESULT = new RecordType( nom, champs ); 
@@ -771,10 +904,24 @@ Affectable ::= UL_Identificateur:nom
 				{:
 					RESULT = affectable;
 				:}
+			/*
 			| Affectable:enregistrement UL_Point UL_Identificateur:etiquette
 				{:
 					RESULT = new FieldAssignment( enregistrement, etiquette);
 				:}
+			*/
+			| Affectable:objet UL_Point UL_Identificateur:attribut
+				{:
+					RESULT = new AttributAssignment(objet, attribut);
+				:}
+			| UL_This UL_Point UL_Identificateur:attribut
+				{:
+					RESULT = new AttributPropreAssignment(nomCourant, attribut);
+				:}
+			/*| Affectable:objet UL_Point UL_Identificateur:methode UL_Parenthese_Ouvrante UL_Parenthese_Fermante
+				{:
+					RESULT = new MethodeAccess(objet, methode);
+				:}*/
 			;
 			            
 Expression ::= /* Affectable:affectable UL_Egal Expression:expression 
@@ -861,10 +1008,18 @@ Expression ::= /* Affectable:affectable UL_Egal Expression:expression
 				{:
 					RESULT = new ArrayAccess( expression, indice );
 				:}
-			| Expression:expression UL_Point UL_Identificateur:etiquette
+			/*| Expression:expression UL_Point UL_Identificateur:etiquette
 				{:
 					RESULT = new FieldAccess( expression, etiquette );
-				:}
+				:} */
+			| Expression:expression UL_Point UL_Identificateur:attribut
+			{:
+				RESULT = new AttributAccess(expression, attribut);
+			:}
+			/*| Expression:expression UL_Point UL_Identificateur:methode UL_Parenthese_Ouvrante UL_Parenthese_Fermante
+			{:
+				RESULT = new MethodeCall(expression, etiquette);
+			:}*/
 			| Expression:condition UL_Point_Interrogation Expression:alors UL_Deux_Points Expression:sinon
 				{:
 					RESULT = new ConditionalExpression( condition, alors, sinon);
@@ -942,9 +1097,15 @@ Expression ::= /* Affectable:affectable UL_Egal Expression:expression
              	{: 
 					RESULT = new ArrayAllocation( type, taille ); 
 				:}
-			| UL_Nouveau Type:type UL_Parenthese_Ouvrante UL_Parenthese_Fermante	                     
+			
+			/*| UL_Nouveau Type:type UL_Parenthese_Ouvrante UL_Parenthese_Fermante	                     
              	{: 
 					RESULT = new PointerAllocation( type ); 
-				:}
+				:} */
+			| UL_Nouveau Type:type UL_Parenthese_Ouvrante UL_Parenthese_Fermante	                     
+             	{: 
+					ConstructeurCall cc = new ConstructeurCall(type);
+					RESULT = new ClasseAllocation(type, cc); 
+				:} 	
             ;
        

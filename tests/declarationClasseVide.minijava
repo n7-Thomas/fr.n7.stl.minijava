@@ -1,3 +1,4 @@
+class MainClasse { public static void main () {} }
 class ClasseTest {}
 abstract class ClasseAbstract {}
 final class ClasseFinal {}

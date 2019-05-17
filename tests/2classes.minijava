@@ -1,0 +1,35 @@
+class MC { public static void main () {} }
+class C1 {
+	public int a;
+	public int b;
+		
+	public int t(){
+		int b = 1;
+	}
+	
+	public C1(){
+	
+	}
+	
+	// RESOLVE KO
+	//public int t(){} 
+	//public int b; 
+	//public C1(){} 
+
+	
+}
+
+class C2 {
+	public int a;
+	public int b;
+	
+	public C1 objet;
+		
+	public int t(){
+		//this.a = 2;
+	}
+	
+	public C2(){
+	
+	}
+}

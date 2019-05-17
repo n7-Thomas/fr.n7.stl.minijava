@@ -14,16 +14,13 @@ public class Entete {
 	
 	private List<ParameterDeclaration> parametres;
 	
-	public Entete(String _name, Type _type){
-		this.name = _name;
+	public Entete(String _name, String _nom_classe, Type _type, List<ParameterDeclaration> _parametres){
+		this.name = _nom_classe + "." + _name;
 		this.type = _type;
-		this.parametres = new ArrayList<ParameterDeclaration>();
-	}
-	
-	public Entete(String _name, Type _type, List<ParameterDeclaration> _parametres){
-		this.name = _name;
-		this.type = _type;
-		this.parametres = _parametres;
+		if(_parametres != null)
+			this.parametres = _parametres;
+		else
+			this.parametres = new ArrayList<ParameterDeclaration>();
 	}
 		
 	public String getName() {

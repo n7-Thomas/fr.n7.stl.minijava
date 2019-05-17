@@ -21,13 +21,11 @@ public class NamedType implements Type {
 	public String name;
 
 	public NamedType(String _name) {
-		System.out.println("NT");
 		this.name = _name;
 		this.declaration = null;
 	}
 
 	public NamedType(TypeDeclaration _declaration) {
-		System.out.println("NT2");
 		this.declaration = _declaration;
 		this.name = _declaration.getName();
 	}
@@ -125,8 +123,6 @@ public class NamedType implements Type {
 		if (this.declaration == null) {
 			if (_scope.contains(this.name)) {
 				try {
-
-					
 					TypeDeclaration _declaration = (TypeDeclaration) _scope.get(this.name);
 					this.declaration = _declaration;
 					System.out.println("AHHHH:" + this.declaration);
