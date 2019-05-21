@@ -51,7 +51,7 @@ public class AttributDeclaration implements Definition {
 
 	@Override
 	public boolean checkType() {
-		throw new SemanticsUndefinedException("check type not impl");
+		return true; // Attribut déclaration n'a pas besoin de check type
 	}
 
 	@Override

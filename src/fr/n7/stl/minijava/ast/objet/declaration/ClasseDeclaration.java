@@ -79,6 +79,9 @@ public class ClasseDeclaration implements ObjetDeclaration, HierarchicalScope<De
 			for (Definition def : this.definitions) {
 				_result = _result && def.resolve(this);
 			}
+			for (Definition def : this.constructeurs) {
+				_result = _result && def.resolve(this);
+			}
 			return _result;
 		} else {
 			Logger.error("Identifiant : " + this.name + " déjà pris");
@@ -89,7 +92,17 @@ public class ClasseDeclaration implements ObjetDeclaration, HierarchicalScope<De
 
 	@Override
 	public boolean checkType() {
-		throw new SemanticsUndefinedException("check type pas implémenté");
+		
+		boolean ok = true;
+		for(Definition def : this.definitions){
+			ok = ok && def.checkType();
+		}
+		
+		for(Definition def : this.constructeurs){
+			ok = ok && def.checkType();
+		}
+		
+		return ok;
 	}
 
 	@Override
@@ -221,6 +234,38 @@ public class ClasseDeclaration implements ObjetDeclaration, HierarchicalScope<De
 		}
 		if (_found) {
 			return (ConstructeurDeclaration) _current;
+		} else {
+			return null;
+		}
+	}
+
+	public MethodeDeclaration getMethode(String nomMethode, List<Expression> arguments) {
+		boolean _found = false;
+		Iterator<Definition> _iter = this.definitions.iterator();
+		Definition _current = null;
+		while (_iter.hasNext() && (!_found)) {
+			_current = _iter.next();
+			if(_current instanceof MethodeDeclaration){
+				
+				if(arguments.size() == ((MethodeDeclaration) _current).getParametres().size()) {
+					boolean correspond = true;
+					Iterator<Expression> _iterExpr = arguments.iterator();
+					Iterator<ParameterDeclaration> _iterPd = ((MethodeDeclaration) _current).getParametres().iterator();
+				
+					while(_iterExpr.hasNext() && _iterPd.hasNext() && correspond){
+						ParameterDeclaration pd = _iterPd.next();
+						Expression exp = _iterExpr.next();
+						correspond = correspond && pd.getType().compatibleWith(exp.getType());
+					}
+					
+					_found = correspond;
+					
+				}		
+				
+			}			
+		}
+		if (_found) {
+			return (MethodeDeclaration) _current;
 		} else {
 			return null;
 		}

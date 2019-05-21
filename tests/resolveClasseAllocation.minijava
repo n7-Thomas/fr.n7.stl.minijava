@@ -1,0 +1,25 @@
+class MC { 
+	public static void main () {
+		C1 ob = new C1();
+	} 
+}
+class C1 {
+	private int a;
+	
+	public C1(int x){
+	}
+}
+
+class C2 {
+	private C1 objet;
+	private int b;
+	
+	public void meth(){
+		this.objet = new C1(2);
+			
+		// RESOLVE KO
+		//objet.b = 1;
+		//this.a = 2;
+	}
+}
+

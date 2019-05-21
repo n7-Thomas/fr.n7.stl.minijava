@@ -30,8 +30,7 @@ public class MainClasseDeclaration implements ObjetDeclaration {
 
 	@Override
 	public boolean checkType() {
-		// TODO Auto-generated method stub
-		return false;
+		return this.mainMethode.checkType();
 	}
 
 	@Override

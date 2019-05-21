@@ -6,26 +6,24 @@ class MC {
 class C1 {
 	private int a;
 	
-	public int meth(int j){
+	public void meth(){
 		this.a = 2;
-		//return true; // RESOLVE KO
-		return j + this.a;
 	}
 	
 	public C1(int x){
 		this.a = 2;
-		x = this.a;
 	}
 }
 
 class C2 {
 	private C1 objet;
-
-	public void he(){
-		objet = new C1(2);
-		
-		int x = objet.meth(2);
-		
+	private int b;
+	
+	public void meth(){
+		this.objet = new C1(2);
+		C1 objet2 = new C1(3);
+		objet.a = 1;
+		objet2.a = 2;
 		
 	}
 }

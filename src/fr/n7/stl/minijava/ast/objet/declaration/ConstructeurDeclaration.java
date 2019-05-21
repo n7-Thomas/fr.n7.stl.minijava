@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.n7.stl.minijava.ast.Block;
+import fr.n7.stl.minijava.ast.SemanticsUndefinedException;
 import fr.n7.stl.minijava.ast.instruction.declaration.ParameterDeclaration;
 import fr.n7.stl.minijava.ast.objet.definition.Definition;
 import fr.n7.stl.minijava.ast.scope.Declaration;
@@ -68,29 +69,28 @@ public class ConstructeurDeclaration implements Declaration, Definition {
 	@Override
 	public boolean resolve(HierarchicalScope<Declaration> _scope) {
 		SymbolTable tds = new SymbolTable(_scope);
+		
 		for (ParameterDeclaration pd : this.parametres) {
 			tds.register(pd);
 		}
+	
 		return this.corps.resolve(tds);
 		
 	}
 
 	@Override
 	public boolean checkType() {
-		// TODO Auto-generated method stub
-		return false;
+		return this.corps.checkType();
 	}
 
 	@Override
 	public int allocateMemory(Register _register, int _offset) {
-		// TODO Auto-generated method stub
-		return 0;
+		throw new SemanticsUndefinedException("allocate memory not imple");
 	}
 
 	@Override
 	public Fragment getCode(TAMFactory _factory) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SemanticsUndefinedException("allocate memory not imple");
 	}
 
 	public List<ParameterDeclaration> getParametres() {

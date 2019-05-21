@@ -5,6 +5,7 @@ import java.util.List;
 
 import fr.n7.stl.minijava.ast.Block;
 import fr.n7.stl.minijava.ast.SemanticsUndefinedException;
+import fr.n7.stl.minijava.ast.instruction.Return;
 import fr.n7.stl.minijava.ast.instruction.declaration.ParameterDeclaration;
 import fr.n7.stl.minijava.ast.objet.definition.Definition;
 import fr.n7.stl.minijava.ast.scope.Declaration;
@@ -23,15 +24,16 @@ public class MethodeDeclaration implements Declaration, Definition {
 	private Block corps;
 
 	private List<Keyword> keywords;
-
-	public MethodeDeclaration(List<Keyword> _keywords, Entete _entete, Block _corps) {
+	
+	public MethodeDeclaration(List<Keyword> _keywords, Entete _entete, Block bloc) {
 		this.entete = _entete;
-		this.corps = _corps;
+		this.corps = bloc;
 
 		if (_keywords == null)
 			this.keywords = new ArrayList<Keyword>();
 		else
 			this.keywords = _keywords;
+				
 	}
 
 	@Override
@@ -45,7 +47,7 @@ public class MethodeDeclaration implements Declaration, Definition {
 	}
 
 	public String toString() {
-		return keywords.toString() + entete.toString() + corps.toString();
+		return keywords.toString() + entete.toString();// + corps.toString();
 	}
 
 	public boolean resolve(HierarchicalScope<Declaration> _scope) {
@@ -65,7 +67,7 @@ public class MethodeDeclaration implements Declaration, Definition {
 	
 	@Override
 	public boolean checkType() {
-		throw new SemanticsUndefinedException("check type non implémenté");
+		return this.corps.checkType();
 	}
 
 	@Override
@@ -76,5 +78,9 @@ public class MethodeDeclaration implements Declaration, Definition {
 	@Override
 	public Fragment getCode(TAMFactory _factory) {
 		throw new SemanticsUndefinedException("get code non implémenté");
+	}
+
+	public List<ParameterDeclaration> getParametres() {
+		return this.entete.getParametres();
 	}
 }

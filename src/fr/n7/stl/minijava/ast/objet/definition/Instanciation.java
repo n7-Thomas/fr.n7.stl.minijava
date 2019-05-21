@@ -16,6 +16,14 @@ public class Instanciation {
 	public String getName() {
 		return this.name;
 	}
+
+	public boolean equalsTo(Instanciation instanciation) {
+		return this.name.equals(instanciation.getName());
+	}
+
+	public boolean compatibleWith(Instanciation instanciation) {
+		return this.equalsTo(instanciation);
+	}
 	
 	
 }
