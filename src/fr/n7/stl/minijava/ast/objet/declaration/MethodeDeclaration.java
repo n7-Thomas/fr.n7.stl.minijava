@@ -50,11 +50,12 @@ public class MethodeDeclaration implements Declaration, Definition {
 	}
 
 	public boolean resolve(HierarchicalScope<Declaration> _scope) {
-		if(!this.entete.getType().resolve(_scope)){
-			Logger.error("Erreur du resolve du type de la méthode");
+		if(!this.entete.resolve(_scope)){
+			Logger.error("Erreur du resolve de l'entete de la méthode");
 			return false;
 		}
-			
+		
+		
 		SymbolTable tds = new SymbolTable(_scope);
 
 		for (ParameterDeclaration pd : entete.getParametres()) {

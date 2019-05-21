@@ -3,6 +3,7 @@ package fr.n7.stl.minijava.ast.objet.declaration;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.n7.stl.minijava.ast.objet.definition.Definition;
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
 import fr.n7.stl.minijava.ast.type.Type;
@@ -28,6 +29,12 @@ public class InterfaceDeclaration implements ObjetDeclaration {
 	public boolean resolve(HierarchicalScope<Declaration> _scope) {
 		if(!_scope.contains(this.name)){
 			_scope.register(this);
+			boolean _result = true;
+			for (Entete ent : this.entetes) {
+				_result = _result && ent.resolve(_scope);
+			}
+			
+			
 			return true;
 		} else {
 			return false;
@@ -36,8 +43,7 @@ public class InterfaceDeclaration implements ObjetDeclaration {
 
 	@Override
 	public boolean checkType() {
-		// TODO Auto-generated method stub
-		return false;
+		return true; // Les entetes sont bien checktype
 	}
 
 	@Override

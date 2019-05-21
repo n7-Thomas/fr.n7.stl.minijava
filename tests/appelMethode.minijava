@@ -1,0 +1,28 @@
+class MC { 
+	public static void main () {} 
+}
+
+class C1 {
+	private int a;
+	
+	public int meth(int j){
+		return j;
+	}
+	
+	public C1(){}
+}
+
+class C2 {
+	private C1 objet;
+
+	public int aie(){
+		return 3;
+	}
+
+	public void he(){
+		objet = new C1();
+		int x = objet.meth(2, 1);	
+		int a = this.aie();
+	}
+}
+

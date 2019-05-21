@@ -20,7 +20,6 @@ public class AttributPropreAssignment extends AbstractAttribut implements Assign
 	public AttributPropreAssignment(String nomClasse, String _name) {
 		super(null, _name);
 		this.nomClasse = nomClasse;
-		// System.out.println("AttributPropreAssignment : " + this.toString());
 	}
 
 	/*
@@ -51,8 +50,6 @@ public class AttributPropreAssignment extends AbstractAttribut implements Assign
 			Logger.error("La déclaration de la classe appelée par this n'a pas été retrouvée");
 			return false;
 		}
-		// System.out.println("Declaration : " + decl + " " +
-		// decl.getClass().getName() + " " + nomClasse);
 
 		if (decl instanceof ClasseDeclaration) {
 
