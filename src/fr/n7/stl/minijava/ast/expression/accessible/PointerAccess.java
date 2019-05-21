@@ -3,7 +3,6 @@
  */
 package fr.n7.stl.minijava.ast.expression.accessible;
 
-import fr.n7.stl.minijava.ast.SemanticsUndefinedException;
 import fr.n7.stl.minijava.ast.expression.AbstractPointer;
 import fr.n7.stl.minijava.ast.expression.Expression;
 import fr.n7.stl.tam.ast.Fragment;

@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.n7.stl.minijava.ast.instruction.declaration.ParameterDeclaration;
-import fr.n7.stl.minijava.ast.scope.Declaration;
-import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
 import fr.n7.stl.minijava.ast.type.Type;
 
 public class Entete {

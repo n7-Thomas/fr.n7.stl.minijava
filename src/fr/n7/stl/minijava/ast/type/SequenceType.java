@@ -9,7 +9,6 @@ import java.util.List;
 
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
-import fr.n7.stl.minijava.ast.type.declaration.FieldDeclaration;
 
 /**
  * Implementation of the Abstract Syntax Tree node for a sequence type.

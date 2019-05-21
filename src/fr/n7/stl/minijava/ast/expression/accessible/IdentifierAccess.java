@@ -5,9 +5,7 @@ package fr.n7.stl.minijava.ast.expression.accessible;
 
 import fr.n7.stl.minijava.ast.expression.AbstractIdentifier;
 import fr.n7.stl.minijava.ast.expression.AbstractUse;
-import fr.n7.stl.minijava.ast.expression.FunctionCall;
 import fr.n7.stl.minijava.ast.instruction.declaration.ConstantDeclaration;
-import fr.n7.stl.minijava.ast.instruction.declaration.FunctionDeclaration;
 import fr.n7.stl.minijava.ast.instruction.declaration.ParameterDeclaration;
 import fr.n7.stl.minijava.ast.instruction.declaration.VariableDeclaration;
 import fr.n7.stl.minijava.ast.objet.declaration.AttributDeclaration;

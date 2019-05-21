@@ -4,8 +4,6 @@ package fr.n7.stl.minijava;
 import java_cup.runtime.ComplexSymbolFactory;
 import java_cup.runtime.ComplexSymbolFactory.Location;
 import java_cup.runtime.Symbol;
-import java.lang.*;
-import java.io.InputStreamReader;
 
 
 /**

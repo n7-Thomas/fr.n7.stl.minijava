@@ -1,11 +1,9 @@
-package fr.n7.stl.minijava;
+package fr.n7.stl.minijava.ast.expression;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import fr.n7.stl.minijava.ast.SemanticsUndefinedException;
-import fr.n7.stl.minijava.ast.expression.Expression;
-import fr.n7.stl.minijava.ast.instruction.declaration.ParameterDeclaration;
 import fr.n7.stl.minijava.ast.objet.declaration.ClasseDeclaration;
 import fr.n7.stl.minijava.ast.objet.declaration.MethodeDeclaration;
 import fr.n7.stl.minijava.ast.scope.Declaration;

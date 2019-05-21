@@ -12,7 +12,6 @@ import fr.n7.stl.minijava.ast.instruction.Instruction;
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
 import fr.n7.stl.minijava.ast.scope.SymbolTable;
-import fr.n7.stl.minijava.ast.type.AtomicType;
 import fr.n7.stl.minijava.ast.type.Type;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.Register;

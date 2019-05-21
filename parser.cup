@@ -1158,5 +1158,13 @@ Expression ::= /* Affectable:affectable UL_Egal Expression:expression
 			{:
 				RESULT = new MethodeCall(objet, methode, parametres);
 			:}
+			| UL_This UL_Point UL_Identificateur:methode UL_Parenthese_Ouvrante UL_Parenthese_Fermante
+			{:
+				RESULT = new MethodePropreCall(nomCourant, methode, null);
+			:}
+			| UL_This UL_Point UL_Identificateur:methode UL_Parenthese_Ouvrante Expressions:parametres UL_Parenthese_Fermante
+			{:
+				RESULT = new MethodePropreCall(nomCourant, methode, parametres);
+			:}
             ;
        

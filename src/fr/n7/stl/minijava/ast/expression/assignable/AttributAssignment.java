@@ -5,7 +5,6 @@ package fr.n7.stl.minijava.ast.expression.assignable;
 
 import fr.n7.stl.minijava.ast.SemanticsUndefinedException;
 import fr.n7.stl.minijava.ast.expression.AbstractAttribut;
-import fr.n7.stl.minijava.ast.expression.AbstractField;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.TAMFactory;
 

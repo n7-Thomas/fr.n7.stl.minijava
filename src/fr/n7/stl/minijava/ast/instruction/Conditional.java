@@ -6,7 +6,6 @@ package fr.n7.stl.minijava.ast.instruction;
 import java.util.Optional;
 
 import fr.n7.stl.minijava.ast.Block;
-import fr.n7.stl.minijava.ast.SemanticsUndefinedException;
 import fr.n7.stl.minijava.ast.expression.Expression;
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;

@@ -3,11 +3,9 @@
  */
 package fr.n7.stl.minijava.ast.expression.assignable;
 
-import fr.n7.stl.minijava.ast.SemanticsUndefinedException;
 import fr.n7.stl.minijava.ast.expression.AbstractArray;
 import fr.n7.stl.minijava.ast.expression.BinaryOperator;
 import fr.n7.stl.minijava.ast.expression.Expression;
-import fr.n7.stl.minijava.ast.expression.MemoryOperator;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.TAMFactory;
 

@@ -6,7 +6,7 @@ class MC {
 class C1 {
 	private int a;
 	
-	public int meth(int j){
+	public int meth(int j, int z){
 		this.a = 2;
 		//return true; // RESOLVE KO
 		return j + this.a;
@@ -23,10 +23,7 @@ class C2 {
 
 	public void he(){
 		objet = new C1(2);
-		
-		int x = objet.meth(2);
-		
-		
+		int x = objet.meth(2, 1);	
 	}
 }
 

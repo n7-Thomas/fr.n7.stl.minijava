@@ -3,7 +3,6 @@
  */
 package fr.n7.stl.minijava.ast.expression.allocation;
 
-import fr.n7.stl.minijava.ast.SemanticsUndefinedException;
 import fr.n7.stl.minijava.ast.expression.Expression;
 import fr.n7.stl.minijava.ast.expression.MemoryOperator;
 import fr.n7.stl.minijava.ast.scope.Declaration;

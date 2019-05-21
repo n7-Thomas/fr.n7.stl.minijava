@@ -3,18 +3,14 @@
  */
 package fr.n7.stl.minijava.ast.expression.assignable;
 
-import fr.n7.stl.minijava.ast.SemanticsUndefinedException;
 import fr.n7.stl.minijava.ast.expression.AbstractIdentifier;
 import fr.n7.stl.minijava.ast.instruction.declaration.ParameterDeclaration;
 import fr.n7.stl.minijava.ast.instruction.declaration.VariableDeclaration;
 import fr.n7.stl.minijava.ast.objet.declaration.AttributDeclaration;
-import fr.n7.stl.minijava.ast.objet.declaration.ClasseDeclaration;
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
 import fr.n7.stl.minijava.ast.type.ArrayType;
-import fr.n7.stl.minijava.ast.type.AtomicType;
 import fr.n7.stl.minijava.ast.type.PointerType;
-import fr.n7.stl.minijava.ast.type.RecordType;
 import fr.n7.stl.minijava.ast.type.Type;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.Register;
