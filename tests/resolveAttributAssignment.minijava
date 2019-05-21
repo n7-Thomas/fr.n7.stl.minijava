@@ -11,19 +11,14 @@ class C2 {
 	private int b;
 	
 	public void meth(){
-		//C1 teh = new C1(2);
-		
-		//C1.a = 2;
-	
-		//this.objet.a = 1;
-		this.b = 2;
-		this.objet = 1;
-		
 		objet.a = 1;
+		this.b = 2;
 		
 		// RESOLVE KO
 		//objet.b = 1;
 		//this.a = 2;
+		
 	}
+	
 }
 

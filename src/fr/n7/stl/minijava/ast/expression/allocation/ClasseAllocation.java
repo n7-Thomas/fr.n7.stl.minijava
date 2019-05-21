@@ -14,12 +14,12 @@ import fr.n7.stl.tam.ast.TAMFactory;
  */
 public class ClasseAllocation implements Expression {
 
-	protected Type classe;
+	protected Type type_classe;
 	
 	protected ConstructeurCall constructeurCall;
 	
 	public ClasseAllocation(Type _classe, ConstructeurCall _constructeurCall) {
-		this.classe = _classe;
+		this.type_classe = _classe;
 		this.constructeurCall = _constructeurCall;
 	}
 	
@@ -36,7 +36,7 @@ public class ClasseAllocation implements Expression {
 	 */
 	@Override
 	public boolean resolve(HierarchicalScope<Declaration> _scope) {
-		return this.classe.resolve(_scope) && this.constructeurCall.resolve(_scope);
+		return this.type_classe.resolve(_scope) && this.constructeurCall.resolve(_scope);
 	}
 
 	/* (non-Javadoc)
@@ -44,7 +44,7 @@ public class ClasseAllocation implements Expression {
 	 */
 	@Override
 	public Type getType() {
-		return this.classe;
+		return this.type_classe;
 	}
 
 	/* (non-Javadoc)

@@ -1,5 +1,6 @@
 package fr.n7.stl.minijava.ast.objet.definition;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import fr.n7.stl.minijava.ast.expression.Expression;
@@ -20,9 +21,13 @@ public class ConstructeurCall implements Expression {
 
 	private ConstructeurDeclaration declaration;
 	
-	public ConstructeurCall(Type type) {
+	public ConstructeurCall(Type type, List<Expression> _arguments) {
 		this.type = type;
-		this.arguments = null;
+		if(_arguments == null)
+			this.arguments = new ArrayList<Expression>();
+		else
+			this.arguments = _arguments;
+		
 		this.declaration = null;
 	}
 
@@ -33,13 +38,11 @@ public class ConstructeurCall implements Expression {
 		if (this.declaration == null) {
 			if (_scope.knows(name)) {
 				try {
-					ClasseDeclaration _declaration = (ClasseDeclaration) _scope.get(name);
+					ClasseDeclaration cd = (ClasseDeclaration) _scope.get(name);
 					
-					// RECUPERER LE CONSTRUCTEUR DE Classe
+					this.declaration = cd.getConstructeur(this.arguments);
 					
-					
-					this.declaration = null;
-					return true;
+					return this.declaration != null;
 				} catch (ClassCastException e) {
 					Logger.error("The declaration for " + name + " is of the wrong kind.");
 					return false;

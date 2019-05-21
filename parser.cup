@@ -351,6 +351,7 @@ Definition ::= 	/* ATTRIBUTS */
 					} else {
 						_type = ((PartialType)_type).complete( type );
  					}
+
 					List<Keyword> keywords = new ArrayList<Keyword>();
 					keywords.add(Keyword.PUBLIC);
 					RESULT = new AttributDeclaration(keywords, _type, nomCourant, identifiant.getLeft());
@@ -914,10 +915,13 @@ Affectable ::= UL_Identificateur:nom
 				{:
 					RESULT = new AttributAssignment(objet, attribut);
 				:}
-			| UL_This UL_Point UL_Identificateur:attribut
+			| UL_This UL_Point  UL_Identificateur:attribut
 				{:
 					RESULT = new AttributPropreAssignment(nomCourant, attribut);
 				:}
+				
+				
+				
 			/*| Affectable:objet UL_Point UL_Identificateur:methode UL_Parenthese_Ouvrante UL_Parenthese_Fermante
 				{:
 					RESULT = new MethodeAccess(objet, methode);
@@ -1104,8 +1108,13 @@ Expression ::= /* Affectable:affectable UL_Egal Expression:expression
 				:} */
 			| UL_Nouveau Type:type UL_Parenthese_Ouvrante UL_Parenthese_Fermante	                     
              	{: 
-					ConstructeurCall cc = new ConstructeurCall(type);
+					ConstructeurCall cc = new ConstructeurCall(type, null);
 					RESULT = new ClasseAllocation(type, cc); 
 				:} 	
+			| UL_Nouveau Type:type UL_Parenthese_Ouvrante Expressions:parametres UL_Parenthese_Fermante	                     
+             	{: 
+					ConstructeurCall cc = new ConstructeurCall(type, parametres);
+					RESULT = new ClasseAllocation(type, cc); 
+				:} 
             ;
        

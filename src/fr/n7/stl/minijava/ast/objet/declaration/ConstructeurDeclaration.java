@@ -34,7 +34,7 @@ public class ConstructeurDeclaration implements Declaration, Definition {
 			Logger.error("Erreur constructeur pas le nom de la classe : " + _nom_classe);
 		
 		
-		this.name = _nom_classe + "." + _name;
+		this.name = _name;
 		//this.nom_classe = _nom_classe;
 		this.corps = _corps;
 		if(_parametres != null)
@@ -67,21 +67,12 @@ public class ConstructeurDeclaration implements Declaration, Definition {
 
 	@Override
 	public boolean resolve(HierarchicalScope<Declaration> _scope) {
-		if (_scope.contains(this.name)) {
-			Logger.error("Erreur identifiant déjà pris");
-			return false;
-		} else {
-
-			_scope.register(this);
-
-			SymbolTable tds = new SymbolTable(_scope);
-
-			for (ParameterDeclaration pd : this.parametres) {
-				tds.register(pd);
-			}
-
-			return this.corps.resolve(tds);
+		SymbolTable tds = new SymbolTable(_scope);
+		for (ParameterDeclaration pd : this.parametres) {
+			tds.register(pd);
 		}
+		return this.corps.resolve(tds);
+		
 	}
 
 	@Override
@@ -100,5 +91,9 @@ public class ConstructeurDeclaration implements Declaration, Definition {
 	public Fragment getCode(TAMFactory _factory) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public List<ParameterDeclaration> getParametres() {
+		return parametres;
 	}
 }

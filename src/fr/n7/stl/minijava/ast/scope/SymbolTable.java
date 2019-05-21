@@ -100,7 +100,7 @@ public class SymbolTable implements HierarchicalScope<Declaration> {
 		if (this.context != null) {
 			_local += "Hierarchical definitions :\n" + this.context.toString();
 		}
-		_local += "Local definitions : ";
+		_local += "Local definitions : \n";
 		for (Entry<String,Declaration> _entry : this.declarations.entrySet()) {
 			_local += _entry.getKey() + " -> " + _entry.getValue().toString() + "\n";
 		}

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.n7.stl.minijava.ast.Block;
+import fr.n7.stl.minijava.ast.SemanticsUndefinedException;
 import fr.n7.stl.minijava.ast.instruction.declaration.ParameterDeclaration;
 import fr.n7.stl.minijava.ast.objet.definition.Definition;
 import fr.n7.stl.minijava.ast.scope.Declaration;
@@ -48,38 +49,32 @@ public class MethodeDeclaration implements Declaration, Definition {
 	}
 
 	public boolean resolve(HierarchicalScope<Declaration> _scope) {
-		if (_scope.contains(this.entete.getName())) {
-			Logger.error("Erreur identifiant déjà pris");
+		if(!this.entete.getType().resolve(_scope)){
+			Logger.error("Erreur du resolve du type de la méthode");
 			return false;
-		} else {
-
-			_scope.register(this);
-
-			SymbolTable tds = new SymbolTable(_scope);
-
-			for (ParameterDeclaration pd : entete.getParametres()) {
-				tds.register(pd);
-			}
-
-			return this.corps.resolve(tds);
 		}
-	}
+			
+		SymbolTable tds = new SymbolTable(_scope);
 
+		for (ParameterDeclaration pd : entete.getParametres()) {
+			tds.register(pd);
+		}
+
+		return this.corps.resolve(tds);
+	}
+	
 	@Override
 	public boolean checkType() {
-		// TODO Auto-generated method stub
-		return false;
+		throw new SemanticsUndefinedException("check type non implémenté");
 	}
 
 	@Override
 	public int allocateMemory(Register _register, int _offset) {
-		// TODO Auto-generated method stub
-		return 0;
+		throw new SemanticsUndefinedException("allocate memory non implémenté");
 	}
 
 	@Override
 	public Fragment getCode(TAMFactory _factory) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SemanticsUndefinedException("get code non implémenté");
 	}
 }

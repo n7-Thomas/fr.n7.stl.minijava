@@ -7,15 +7,15 @@ import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
 import fr.n7.stl.util.Logger;
 
 public class ClasseType implements Type {
-	
+
 	private Instanciation instanciation;
-	
+
 	private ClasseDeclaration declaration;
-	
-	public ClasseType(Instanciation _instanciation){
+
+	public ClasseType(Instanciation _instanciation) {
 		this.instanciation = _instanciation;
 	}
-	
+
 	@Override
 	public boolean equalsTo(Type _other) {
 		// TODO Auto-generated method stub
@@ -43,11 +43,12 @@ public class ClasseType implements Type {
 	@Override
 	public boolean resolve(HierarchicalScope<Declaration> _scope) {
 		String name = this.instanciation.getName();
-		
 		if (this.declaration == null) {
 			if (_scope.knows(name)) {
 				try {
 					ClasseDeclaration _declaration = (ClasseDeclaration) _scope.get(name);
+					// System.out.println("declaration de " + name + " : " +
+					// _declaration);
 					this.declaration = _declaration;
 					return true;
 				} catch (ClassCastException e) {
@@ -62,10 +63,14 @@ public class ClasseType implements Type {
 			return true;
 		}
 	}
-	
+
 	@Override
-	public String toString(){
+	public String toString() {
 		return this.instanciation.getName();
+	}
+
+	public ClasseDeclaration getDeclaration() {
+		return this.declaration;
 	}
 
 }

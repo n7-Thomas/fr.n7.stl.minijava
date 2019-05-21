@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.n7.stl.minijava.ast.instruction.declaration.ParameterDeclaration;
+import fr.n7.stl.minijava.ast.scope.Declaration;
+import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
 import fr.n7.stl.minijava.ast.type.Type;
 
 public class Entete {
@@ -15,7 +17,7 @@ public class Entete {
 	private List<ParameterDeclaration> parametres;
 	
 	public Entete(String _name, String _nom_classe, Type _type, List<ParameterDeclaration> _parametres){
-		this.name = _nom_classe + "." + _name;
+		this.name = _name;
 		this.type = _type;
 		if(_parametres != null)
 			this.parametres = _parametres;
@@ -41,4 +43,5 @@ public class Entete {
 		else
 			return this.type.toString() + " " + this.name + "(" + this.parametres.toString() + ")";
 	}
+
 }
