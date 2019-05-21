@@ -2,7 +2,7 @@ class MC { public static void main () {} }
 class C1 {
 	private int a;
 	
-	public C1(){
+	public C1(int x){
 	}
 }
 
@@ -11,15 +11,15 @@ class C2 {
 	private int b;
 	
 	public void meth(){
-		//C1 teh = new C1(2);
+		C1 teh = new C1(2);
 		
 		//C1.a = 2;
 	
 		//this.objet.a = 1;
-		this.b = 2;
-		this.objet = 1;
+		//this.b = 2;
+		//this.objet = 1;
 		
-		objet.a = 1;
+		//objet.a = 1;
 		
 		// RESOLVE KO
 		//objet.b = 1;

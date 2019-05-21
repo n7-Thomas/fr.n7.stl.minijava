@@ -47,8 +47,6 @@ public class ClasseType implements Type {
 			if (_scope.knows(name)) {
 				try {
 					ClasseDeclaration _declaration = (ClasseDeclaration) _scope.get(name);
-					// System.out.println("declaration de " + name + " : " +
-					// _declaration);
 					this.declaration = _declaration;
 					return true;
 				} catch (ClassCastException e) {
