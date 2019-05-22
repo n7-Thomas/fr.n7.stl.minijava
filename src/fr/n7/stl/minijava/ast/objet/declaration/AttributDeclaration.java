@@ -60,4 +60,16 @@ public class AttributDeclaration implements Definition {
 		throw new SemanticsUndefinedException("get code not impl");
 	}
 
+	public boolean isPrivate() {
+		return this.keywords.contains(Keyword.PRIVATE);
+	}
+	
+	public boolean isStatic() {
+		return this.keywords.contains(Keyword.STATIC);
+	}
+	
+	public boolean isFinal() {
+		return this.keywords.contains(Keyword.FINAL);
+	}
+
 }

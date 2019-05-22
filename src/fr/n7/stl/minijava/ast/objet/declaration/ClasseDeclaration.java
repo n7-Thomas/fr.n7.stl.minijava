@@ -273,7 +273,7 @@ public class ClasseDeclaration implements ObjetDeclaration, HierarchicalScope<De
 		while (_iter.hasNext() && (!_found)) {
 			_current = _iter.next();
 			if (_current instanceof ConstructeurDeclaration) {
-				_found = parametresCorrespond(arguments, ((MethodeDeclaration) _current).getParametres());
+				_found = parametresCorrespond(arguments, ((ConstructeurDeclaration) _current).getParametres());
 			}
 		}
 		if (_found) {

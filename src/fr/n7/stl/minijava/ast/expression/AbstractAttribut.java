@@ -52,7 +52,8 @@ public abstract class AbstractAttribut implements Expression {
 				Declaration attr_decl = cd.get(this.name);
 
 				if (attr_decl instanceof AttributDeclaration) {
-					this.attribut = (AttributDeclaration) attr_decl;
+					this.attribut = (AttributDeclaration) attr_decl;	
+					
 					return true;
 				} else {
 					Logger.error("Cette déclaration n'est pas un attribut");

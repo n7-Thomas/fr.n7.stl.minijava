@@ -58,6 +58,12 @@ public class AttributPropreAssignment extends AbstractAttribut implements Assign
 
 				if (attr_decl instanceof AttributDeclaration) {
 					this.attribut = (AttributDeclaration) attr_decl;
+					
+					if(this.attribut.isFinal()){
+						Logger.error("L'attribut " + this.name + " ne peut être modifié car il est final");
+						return false;
+					}
+					
 					return true;
 				} else {
 					Logger.error("Cette déclaration n'est pas un attribut");

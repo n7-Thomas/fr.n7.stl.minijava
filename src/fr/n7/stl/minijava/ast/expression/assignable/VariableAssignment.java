@@ -56,8 +56,8 @@ public class VariableAssignment extends AbstractIdentifier implements Assignable
 				this.declaration = ((ParameterDeclaration) _declaration);
 				return true;
 			} else if (_declaration instanceof AttributDeclaration) {
-				this.declaration = ((AttributDeclaration) _declaration);
-				return true;
+				Logger.error(this.name + " n'a pas pu être résolu car c'est un attribut, il faut l'appeler avec this ou un objet");
+				return false;
 			} else{
 				
 				Logger.error("The declaration for " + this.name + " is of the wrong kind: " + _declaration.getClass());
