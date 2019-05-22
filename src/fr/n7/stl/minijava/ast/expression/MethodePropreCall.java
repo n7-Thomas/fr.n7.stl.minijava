@@ -31,7 +31,9 @@ public class MethodePropreCall implements Expression {
 		} else {
 			this.arguments = new ArrayList<Expression>();
 		}
+		
 
+		
 		this.declaration = null;
 	}
 
@@ -55,8 +57,10 @@ public class MethodePropreCall implements Expression {
 			Logger.error("La déclaration n'est pas une Classe Declaration");
 			return false;
 		}
-
+		
+	
 		ClasseDeclaration cd = (ClasseDeclaration) decl;
+		
 		this.declaration = cd.getMethode(this.nomMethode, this.arguments);
 
 		if (this.declaration != null) {
@@ -69,6 +73,7 @@ public class MethodePropreCall implements Expression {
 
 	@Override
 	public Type getType() {
+		//System.out.println("this." + this.declaration + " t " + this.declaration.getType());
 		return this.declaration.getType();
 	}
 

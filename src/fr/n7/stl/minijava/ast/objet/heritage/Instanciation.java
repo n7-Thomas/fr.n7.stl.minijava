@@ -1,4 +1,7 @@
-package fr.n7.stl.minijava.ast.objet.definition;
+package fr.n7.stl.minijava.ast.objet.heritage;
+
+import fr.n7.stl.minijava.ast.scope.Declaration;
+import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
 
 public class Instanciation {
 	
@@ -23,6 +26,11 @@ public class Instanciation {
 
 	public boolean compatibleWith(Instanciation instanciation) {
 		return this.equalsTo(instanciation);
+	}
+
+	public boolean resolve(HierarchicalScope<Declaration> _scope) {
+		// A REFAIRE SI PLUSIEURS INSTANCIATIONS
+		return _scope.knows(this.name);		
 	}
 	
 	

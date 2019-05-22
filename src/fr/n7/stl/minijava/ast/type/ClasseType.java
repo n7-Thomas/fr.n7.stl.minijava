@@ -2,7 +2,7 @@ package fr.n7.stl.minijava.ast.type;
 
 import fr.n7.stl.minijava.ast.SemanticsUndefinedException;
 import fr.n7.stl.minijava.ast.objet.declaration.ClasseDeclaration;
-import fr.n7.stl.minijava.ast.objet.definition.Instanciation;
+import fr.n7.stl.minijava.ast.objet.heritage.Instanciation;
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
 import fr.n7.stl.util.Logger;

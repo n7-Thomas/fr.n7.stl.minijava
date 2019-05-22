@@ -7,8 +7,8 @@ import java.util.List;
 import fr.n7.stl.minijava.ast.SemanticsUndefinedException;
 import fr.n7.stl.minijava.ast.expression.Expression;
 import fr.n7.stl.minijava.ast.instruction.declaration.ParameterDeclaration;
-import fr.n7.stl.minijava.ast.objet.definition.Definition;
-import fr.n7.stl.minijava.ast.objet.definition.Instanciation;
+import fr.n7.stl.minijava.ast.objet.heritage.Extension;
+import fr.n7.stl.minijava.ast.objet.heritage.Instanciation;
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
 import fr.n7.stl.minijava.ast.type.Type;
@@ -29,41 +29,23 @@ public class ClasseDeclaration implements ObjetDeclaration, HierarchicalScope<De
 
 	private HierarchicalScope<Declaration> context;
 
-	public ClasseDeclaration(String _name, List<Definition> _definitions) {
-		this.name = _name;
+	private Extension extension;
 
-		this.setKeyword(Keyword.NONE);
-
-		this.definitions = new LinkedList<Definition>();
-		this.constructeurs = new LinkedList<Definition>();
-
-		for (Definition _definition : _definitions) {
-			if (!(_definition instanceof ConstructeurDeclaration))
-				this.definitions.add(_definition);
-			else
-				this.constructeurs.add(_definition);
-		}
-
-	}
-
-	public ClasseDeclaration(String _name, Keyword _keyword, List<Definition> _definitions) {
+	public ClasseDeclaration(String _name, Keyword _keyword, List<Definition> _definitions, Extension extension) {
 		this.name = _name;
 
 		this.setKeyword(_keyword);
 
 		this.definitions = new LinkedList<Definition>();
+		this.constructeurs = new LinkedList<Definition>();
 		for (Definition _definition : _definitions) {
 			if (!(_definition instanceof ConstructeurDeclaration))
 				this.definitions.add(_definition);
 			else
 				this.constructeurs.add((ConstructeurDeclaration) _definition);
 		}
-	}
 
-	public ClasseDeclaration(Instanciation instanciation) {
-		this.name = instanciation.getName();
-
-		this.definitions = new LinkedList<Definition>();
+		this.extension = extension;
 	}
 
 	public List<Definition> getElements() {
@@ -73,35 +55,125 @@ public class ClasseDeclaration implements ObjetDeclaration, HierarchicalScope<De
 	@Override
 	public boolean resolve(HierarchicalScope<Declaration> _scope) {
 		context = _scope;
+		boolean _result = true;
+
+		if (this.extension != null) {
+			if (!this.extension.resolve(_scope)) {
+				Logger.error("L'héritage ou la réalisation n'a pas pu être résolue");
+				return false;
+			}
+
+			// Definitions héritées
+			Instanciation toHerite = this.extension.getHerites();
+			if (toHerite != null) {
+
+				// Récupération de l'interface réalisée
+				Declaration decl = _scope.get(toHerite.getName());
+
+				if (decl instanceof ClasseDeclaration) {
+					ClasseDeclaration claDecl = (ClasseDeclaration) decl;
+
+					// Pour chaque entête, vérification que la méthode est
+					// réalisée
+					for (Definition def : claDecl.getElements()) {
+						if (!this.contains(def.getName())) {
+							this.register(def);
+						}
+					}
+				} else {
+					Logger.error("Tentative de réalisation sur autre chose qu'une interface");
+					return false;
+				}
+			}
+
+			// Definitions réalisées
+			for (Instanciation toImplemente : this.extension.getRealises()) {
+				if (toImplemente != null) {
+
+					// Récupération de la classe héritée
+					Declaration decl = _scope.get(toImplemente.getName());
+
+					if (decl instanceof InterfaceDeclaration) {
+						InterfaceDeclaration itfDecl = (InterfaceDeclaration) decl;
+
+						// Pour chaque entête, vérification que la méthode est
+						// réalisée
+						for (Entete e : itfDecl.getEntetes()) {
+							if (!this.contains(e.getName())) {
+								Logger.error("Cette classe n'implémente pas : " + e.getName());
+								return false;
+							}
+
+							Declaration d = this.get(e.getName());
+
+							if (d instanceof MethodeDeclaration) {
+								if (!sameParametres(e.getParametres(), ((MethodeDeclaration) d).getParametres())) {
+									Logger.error("La méthode de la classe n'a pas la même entête : " + e.getName());
+									return false;
+								}
+							} else {
+								Logger.error("La déclaration  : " + e.getName() + " n'est pas une méthode !");
+								return false;
+							}
+
+						}
+
+					} else {
+						Logger.error("Tentative de réalisation sur autre chose qu'une interface");
+						return false;
+					}
+				}
+			}
+
+		}
+		
 		if (!_scope.contains(this.name)) {
 			_scope.register(this);
-			boolean _result = true;
+
 			for (Definition def : this.definitions) {
 				_result = _result && def.resolve(this);
 			}
 			for (Definition def : this.constructeurs) {
 				_result = _result && def.resolve(this);
 			}
-			return _result;
 		} else {
 			Logger.error("Identifiant : " + this.name + " déjà pris");
 			return false;
 		}
 
+		return _result;
+	}
+
+	private boolean sameParametres(List<ParameterDeclaration> parametres, List<ParameterDeclaration> parametres2) {
+		if (parametres.size() == parametres2.size()) {
+			boolean correspond = true;
+			Iterator<ParameterDeclaration> _iterPd1 = parametres.iterator();
+			Iterator<ParameterDeclaration> _iterPd2 = parametres2.iterator();
+
+			while (_iterPd1.hasNext() && _iterPd2.hasNext() && correspond) {
+				ParameterDeclaration pd1 = _iterPd1.next();
+				ParameterDeclaration pd2 = _iterPd2.next();
+				correspond = correspond && pd1.getType().compatibleWith(pd2.getType());
+			}
+
+			return correspond;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
 	public boolean checkType() {
-		
+
 		boolean ok = true;
-		for(Definition def : this.definitions){
+		for (Definition def : this.definitions) {
 			ok = ok && def.checkType();
 		}
-		
-		for(Definition def : this.constructeurs){
+
+		for (Definition def : this.constructeurs) {
 			ok = ok && def.checkType();
 		}
-		
+
 		return ok;
 	}
 
@@ -169,19 +241,6 @@ public class ClasseDeclaration implements ObjetDeclaration, HierarchicalScope<De
 			throw new IllegalArgumentException();
 		}
 	}
-	/*
-	 * @Override public boolean equalsTo(Type _other) { throw new
-	 * SemanticsUndefinedException("equals to pas implémenté"); }
-	 * 
-	 * @Override public boolean compatibleWith(Type _other) { throw new
-	 * SemanticsUndefinedException("compatible with to pas implémenté"); }
-	 * 
-	 * @Override public Type merge(Type _other) { throw new
-	 * SemanticsUndefinedException("merge to pas implémenté"); }
-	 * 
-	 * @Override public int length() { throw new SemanticsUndefinedException(
-	 * "length to pas implémenté"); }
-	 */
 
 	public Keyword getKeyword() {
 		return keyword;
@@ -213,24 +272,9 @@ public class ClasseDeclaration implements ObjetDeclaration, HierarchicalScope<De
 		Definition _current = null;
 		while (_iter.hasNext() && (!_found)) {
 			_current = _iter.next();
-			if(_current instanceof ConstructeurDeclaration){
-				
-				if(arguments.size() == ((ConstructeurDeclaration) _current).getParametres().size()) {
-					boolean correspond = true;
-					Iterator<Expression> _iterExpr = arguments.iterator();
-					Iterator<ParameterDeclaration> _iterPd = ((ConstructeurDeclaration) _current).getParametres().iterator();
-				
-					while(_iterExpr.hasNext() && _iterPd.hasNext() && correspond){
-						ParameterDeclaration pd = _iterPd.next();
-						Expression exp = _iterExpr.next();
-						correspond = correspond && pd.getType().compatibleWith(exp.getType());
-					}
-					
-					_found = correspond;
-					
-				}		
-				
-			}			
+			if (_current instanceof ConstructeurDeclaration) {
+				_found = parametresCorrespond(arguments, ((MethodeDeclaration) _current).getParametres());
+			}
 		}
 		if (_found) {
 			return (ConstructeurDeclaration) _current;
@@ -241,33 +285,37 @@ public class ClasseDeclaration implements ObjetDeclaration, HierarchicalScope<De
 
 	public MethodeDeclaration getMethode(String nomMethode, List<Expression> arguments) {
 		boolean _found = false;
+				
 		Iterator<Definition> _iter = this.definitions.iterator();
 		Definition _current = null;
 		while (_iter.hasNext() && (!_found)) {
 			_current = _iter.next();
-			if(_current instanceof MethodeDeclaration){
-				
-				if(arguments.size() == ((MethodeDeclaration) _current).getParametres().size()) {
-					boolean correspond = true;
-					Iterator<Expression> _iterExpr = arguments.iterator();
-					Iterator<ParameterDeclaration> _iterPd = ((MethodeDeclaration) _current).getParametres().iterator();
-				
-					while(_iterExpr.hasNext() && _iterPd.hasNext() && correspond){
-						ParameterDeclaration pd = _iterPd.next();
-						Expression exp = _iterExpr.next();
-						correspond = correspond && pd.getType().compatibleWith(exp.getType());
-					}
-					
-					_found = correspond;
-					
-				}		
-				
-			}			
+			if (_current instanceof MethodeDeclaration) {
+				_found = _current.getName().equals(nomMethode) && parametresCorrespond(arguments, ((MethodeDeclaration) _current).getParametres());
+			}
 		}
 		if (_found) {
 			return (MethodeDeclaration) _current;
 		} else {
 			return null;
+		}
+	}
+
+	private boolean parametresCorrespond(List<Expression> arguments, List<ParameterDeclaration> parametres) {
+		if (arguments.size() == parametres.size()) {
+			boolean correspond = true;
+			Iterator<Expression> _iterExpr = arguments.iterator();
+			Iterator<ParameterDeclaration> _iterPd = parametres.iterator();
+
+			while (_iterExpr.hasNext() && _iterPd.hasNext() && correspond) {
+				ParameterDeclaration pd = _iterPd.next();
+				Expression exp = _iterExpr.next();
+				correspond = correspond && pd.getType().compatibleWith(exp.getType());
+			}
+
+			return correspond;
+		} else {
+			return false;
 		}
 	}
 

@@ -1,7 +1,7 @@
 package fr.n7.stl.minijava.ast.expression.allocation;
 
+import fr.n7.stl.minijava.ast.expression.ConstructeurCall;
 import fr.n7.stl.minijava.ast.expression.Expression;
-import fr.n7.stl.minijava.ast.objet.definition.ConstructeurCall;
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
 import fr.n7.stl.minijava.ast.type.Type;

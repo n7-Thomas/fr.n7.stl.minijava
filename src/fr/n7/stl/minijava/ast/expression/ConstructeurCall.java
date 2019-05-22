@@ -1,9 +1,8 @@
-package fr.n7.stl.minijava.ast.objet.definition;
+package fr.n7.stl.minijava.ast.expression;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.n7.stl.minijava.ast.expression.Expression;
 import fr.n7.stl.minijava.ast.objet.declaration.ClasseDeclaration;
 import fr.n7.stl.minijava.ast.objet.declaration.ConstructeurDeclaration;
 import fr.n7.stl.minijava.ast.scope.Declaration;

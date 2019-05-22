@@ -21,11 +21,10 @@ import fr.n7.stl.minijava.ast.instruction.declaration.*;
 import fr.n7.stl.minijava.ast.scope.*;
 import fr.n7.stl.minijava.ast.type.*;
 import fr.n7.stl.minijava.ast.type.declaration.*;
-import fr.n7.stl.minijava.ast.objet.*;
 import fr.n7.stl.minijava.ast.objet.declaration.*;
-import fr.n7.stl.minijava.ast.objet.definition.*;
+import fr.n7.stl.minijava.ast.objet.heritage.*;
 import fr.n7.stl.util.*;
-import fr.n7.stl.tam.ast.*;
+
 
 /* Variables partagées dans les actions de l'analyseur syntaxique. */
 parser code {:
@@ -117,9 +116,9 @@ non terminal Entete                     Entete; // OK
 non terminal List<Entete>               Entetes;
 
 // TODO
-//non terminal Expression   		  Extension;
+non terminal Extension   		      Extension;
 non terminal Instanciation			  Instanciation;
-//non terminal List<Instanciation>    Instanciations;
+non terminal List<Instanciation>    Instanciations;
 
 //non terminal List<ParameterDeclaration>	Parameters; OK AVEC L'ANCIEN
 //non terminal Type                     Type; // OK avec l'ancien
@@ -262,62 +261,89 @@ Objets ::= Objets:objets Objet:objet
 				RESULT = _objets; 
 			:}
 			;
-/*
-Objet :
-- TODO: interface declaration extends instanciations { entetes }
-- TODO: interface declaration { entetes }
-- TODO: class declaration extension { definition }
-- TODO: final class declaration extension { definition }
-- TODO: abstract class declaration extension { definition }
-*/ 
-Objet ::=     UL_Interface Interface:nom /*UL_Extends Instanciations:instanciations*/ UL_Accolade_Ouvrante  Entetes:entetes UL_Accolade_Fermante
+
+Objet ::=     UL_Interface Interface:nom UL_Extends Instanciations:herites UL_Accolade_Ouvrante  Entetes:entetes UL_Accolade_Fermante
 				{: 
-					objetCourant = new InterfaceDeclaration(nom, entetes);
+					ExtensionInterface extInt = new ExtensionInterface(herites);
+					objetCourant = new InterfaceDeclaration(nom, entetes, extInt);
 					RESULT = objetCourant;
 				:}
-			  /*| UL_Interface Interface:declaration UL_Accolade_Ouvrante Entetes:entetes UL_Accolade_Fermante
+			  | UL_Interface Interface:nom UL_Accolade_Ouvrante Entetes:entetes UL_Accolade_Fermante
 				{: 
-					RESULT = new Interface(declaration, entetes);
-				:}*/ 
-			  | UL_Interface Interface:nom /*UL_Extends Instanciations:instanciations */ UL_Accolade_Ouvrante UL_Accolade_Fermante
+					objetCourant = new InterfaceDeclaration(nom, entetes, null);
+					RESULT = objetCourant;
+				:} 
+			  | UL_Interface Interface:nom UL_Extends Instanciations:herites UL_Accolade_Ouvrante UL_Accolade_Fermante
 				{: 
-					objetCourant = new InterfaceDeclaration(nom, null);
+					ExtensionInterface extInt = new ExtensionInterface(herites);
+					objetCourant = new InterfaceDeclaration(nom, null, extInt);
 					RESULT = objetCourant;
 				:}
-			  /*| UL_Interface Interface:declaration UL_Accolade_Ouvrante UL_Accolade_Fermante
+			  | UL_Interface Interface:nom UL_Accolade_Ouvrante UL_Accolade_Fermante
 				{: 
-					RESULT = new Interface(declaration);
-				:} */
-			  | UL_Class Classe:nom /*Extension:extension*/ UL_Accolade_Ouvrante Definitions:definitions UL_Accolade_Fermante
+					objetCourant = new InterfaceDeclaration(nom, null, null);
+					RESULT = objetCourant;
+				:} 
+			  | UL_Class Classe:nom Extension:extension UL_Accolade_Ouvrante Definitions:definitions UL_Accolade_Fermante
 				{: 
-					objetCourant = new ClasseDeclaration(nom, definitions);
+					objetCourant = new ClasseDeclaration(nom, Keyword.NONE, definitions, extension);
 					RESULT = objetCourant;
 				:}
-			  | UL_Final UL_Class Classe:nom /*Extension:extension*/ UL_Accolade_Ouvrante Definitions:definitions UL_Accolade_Fermante
+			  | UL_Class Classe:nom UL_Accolade_Ouvrante Definitions:definitions UL_Accolade_Fermante
+				{: 
+					objetCourant = new ClasseDeclaration(nom, Keyword.NONE, definitions, null);
+					RESULT = objetCourant;
+				:}
+			  | UL_Final UL_Class Classe:nom Extension:extension UL_Accolade_Ouvrante Definitions:definitions UL_Accolade_Fermante
 				{:	
-					objetCourant = new ClasseDeclaration(nom, definitions);
+					objetCourant = new ClasseDeclaration(nom, Keyword.FINAL, definitions, extension);
 					RESULT = objetCourant;
 				:}
-			  | UL_Abstract UL_Class Classe:nom /*Extension:extension*/ UL_Accolade_Ouvrante Definitions:definitions UL_Accolade_Fermante
+			  | UL_Final UL_Class Classe:nom UL_Accolade_Ouvrante Definitions:definitions UL_Accolade_Fermante
+				{:	
+					objetCourant = new ClasseDeclaration(nom, Keyword.FINAL, definitions, null);
+					RESULT = objetCourant;
+				:}
+			  | UL_Abstract UL_Class Classe:nom UL_Accolade_Ouvrante Definitions:definitions UL_Accolade_Fermante
 				{: 
-					objetCourant = new ClasseDeclaration(nom, Keyword.ABSTRACT, definitions);
+					objetCourant = new ClasseDeclaration(nom, Keyword.ABSTRACT, definitions, null);
+					RESULT = objetCourant;
+				:}
+			  | UL_Abstract UL_Class Classe:nom Extension:extension UL_Accolade_Ouvrante Definitions:definitions UL_Accolade_Fermante
+				{: 
+					objetCourant = new ClasseDeclaration(nom, Keyword.ABSTRACT, definitions, extension);
 					RESULT = objetCourant;
 				:}	
-			  | UL_Class Classe:nom /*Extension:extension*/ UL_Accolade_Ouvrante UL_Accolade_Fermante
+			  | UL_Class Classe:nom UL_Accolade_Ouvrante UL_Accolade_Fermante
 				{: 
-					objetCourant = new ClasseDeclaration(nom, null);
+					objetCourant = new ClasseDeclaration(nom, Keyword.NONE, null, null);
 					RESULT = objetCourant;
 				:}
-			  | UL_Final UL_Class Classe:nom /*Extension:extension*/ UL_Accolade_Ouvrante UL_Accolade_Fermante
+		      | UL_Class Classe:nom Extension:extension UL_Accolade_Ouvrante UL_Accolade_Fermante
+				{: 
+					objetCourant = new ClasseDeclaration(nom, Keyword.NONE, null, extension);
+					RESULT = objetCourant;
+				:}
+			  | UL_Final UL_Class Classe:nom UL_Accolade_Ouvrante UL_Accolade_Fermante
 				{:
-					objetCourant = new ClasseDeclaration(nom, null);
+					objetCourant = new ClasseDeclaration(nom, Keyword.FINAL, null, null);
 					RESULT = objetCourant;
 				:}
-			  | UL_Abstract UL_Class Classe:nom /*Extension:extension*/ UL_Accolade_Ouvrante UL_Accolade_Fermante
+			  | UL_Final UL_Class Classe:nom Extension:extension UL_Accolade_Ouvrante UL_Accolade_Fermante
+				{:
+					objetCourant = new ClasseDeclaration(nom, Keyword.FINAL, null, extension);
+					RESULT = objetCourant;
+				:}
+			  | UL_Abstract UL_Class Classe:nom UL_Accolade_Ouvrante UL_Accolade_Fermante
 				{: 
-					objetCourant = new ClasseDeclaration(nom, Keyword.ABSTRACT, null);
+					objetCourant = new ClasseDeclaration(nom, Keyword.ABSTRACT, null, null);
 					RESULT = objetCourant;
 				:}	   
+			  | UL_Abstract UL_Class Classe:nom Extension:extension UL_Accolade_Ouvrante UL_Accolade_Fermante
+				{: 
+					objetCourant = new ClasseDeclaration(nom, Keyword.ABSTRACT, null, extension);
+					RESULT = objetCourant;
+				:}	
 			   ;
 
 MainMethode ::= UL_Public UL_Static UL_Type_Vide UL_Main UL_Parenthese_Ouvrante Parameters:parametres UL_Parenthese_Fermante Bloc:corps
@@ -364,12 +390,21 @@ ListeIdentiteExtends ::= Identifiant:identifiant {::}
 ListeIdentiteExtends ::= Instanciation:instanciation {::}
 					     | Instanciation:instanciation UL_Esperluette ListeIdentiteExtends {::}
 					     ;
-	     
-Extension ::= UL_Extends Instanciation:instanciation {::}
-			  | UL_Extends Instanciation:instanciation UL_Implements Instanciations:instanciations {::}
-			  | UL_Implements Instanciations:instanciations {::}
+*/	     
+Extension ::= UL_Extends Instanciation:herites 
+			  {:
+				RESULT = new Extension(herites, null);
+			  :}
+			  | UL_Extends Instanciation:herites UL_Implements Instanciations:implementes
+			  {:
+				RESULT = new Extension(herites, implementes);
+			  :}
+			  | UL_Implements Instanciations:implementes 
+			  {:
+				 RESULT = new Extension(null, implementes);
+			  :}
 			  ;
-*/	
+
 Definition ::= 	/* ATTRIBUTS */
 				UL_Public Type:type Identifiant:identifiant UL_Point_Virgule  
 				{:
@@ -610,11 +645,20 @@ Instanciation ::= UL_Identificateur:ident
 				:} 
 				 //|Identifiant:identifiant UL_Inferieur Instanciations:instanciations UL_Superieur {::}
 				;
-/*
-Instanciations ::= Instanciation:instanciation {::}
-				   | Instanciation:instanciation UL_Virgule Instanciations:instanciations {::}
+
+Instanciations ::= Instanciation:instanciation 
+					{:
+						List<Instanciation> _insts = new ArrayList<Instanciation>();
+						_insts.add(instanciation);
+						RESULT = _insts;
+					:}
+				   | Instanciation:instanciation UL_Virgule Instanciations:instanciations 
+				   	{:
+						instanciations.add(instanciation);
+						RESULT = instanciations;
+					:}
 				   ;
-*/
+
 
 Entete ::=   UL_Type_Vide UL_Identificateur:nom UL_Parenthese_Ouvrante UL_Parenthese_Fermante 
 			{:

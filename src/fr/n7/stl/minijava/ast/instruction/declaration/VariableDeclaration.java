@@ -127,7 +127,7 @@ public class VariableDeclaration implements Declaration, Instruction {
 	public boolean checkType() {
 		//System.out.println("\nComparaison types pour " + this.name);
 		//System.out.println("ExpressionType: " + this.type);
-		//System.out.println("ValueType: " + value.getType());
+		//System.out.println("Value " + value + " Type: " + value.getType());
 		//System.out.println(this.value.getType().compatibleWith(this.type));
 		//System.out.println(this.type.compatibleWith(this.value.getType()));
 		

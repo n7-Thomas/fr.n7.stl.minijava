@@ -10,7 +10,7 @@ import fr.n7.stl.minijava.ast.scope.SymbolTable;
 import fr.n7.stl.minijava.ast.type.Type;
 import fr.n7.stl.util.Logger;
 
-public class Entete {
+public class Entete implements Declaration {
 
 	private String name;
 
@@ -67,9 +67,9 @@ public class Entete {
 			}
 
 		}
-		if (ok)
+		if (ok) {
 			return true;
-		else {
+		} else {
 			Logger.error("Resolve entete faux, vérifiez les parametres");
 			return false;
 		}
