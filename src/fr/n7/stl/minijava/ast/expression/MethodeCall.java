@@ -21,7 +21,7 @@ public class MethodeCall implements Expression {
 	private String nomMethode;
 
 	private List<Expression> arguments;
-	
+
 	private MethodeDeclaration declaration;
 
 	public MethodeCall(Expression objet, String methode, List<Expression> _arguments) {
@@ -32,7 +32,7 @@ public class MethodeCall implements Expression {
 		} else {
 			this.arguments = new ArrayList<Expression>();
 		}
-		
+
 		this.declaration = null;
 	}
 
@@ -49,14 +49,14 @@ public class MethodeCall implements Expression {
 			Logger.error("les arguments sont pas bons");
 			return false;
 		}
-		
-		if(!this.objet.resolve(_scope)) {
+	
+		if (!this.objet.resolve(_scope)) {
 			Logger.error("Erreur resolve de l'objet");
 			return false;
 		}
-		
+
 		Type _typeObjet = this.objet.getType();
-		
+
 		if (!(_typeObjet instanceof ClasseType && _typeObjet.resolve(_scope))) {
 			Logger.error("le type n'a pas pu etre resolve");
 			return false;
@@ -64,8 +64,14 @@ public class MethodeCall implements Expression {
 
 		ClasseDeclaration cd = ((ClasseType) _typeObjet).getDeclaration();
 		this.declaration = cd.getMethode(this.nomMethode, this.arguments);
-		
+
 		if (this.declaration != null) {
+
+			if (this.declaration.isPrivate()) {
+				Logger.error("La méthode " + this.nomMethode + " est privée et n'est pas accessible ici");
+				return false;
+			}
+
 			return true;
 		} else {
 			Logger.error("La méthode n'a pas pu être trouvé");

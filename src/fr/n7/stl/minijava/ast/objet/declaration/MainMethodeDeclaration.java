@@ -82,4 +82,29 @@ public class MainMethodeDeclaration implements Declaration, Definition {
 
 	}
 
+	@Override
+	public boolean isPrivate() {
+		return false;
+	}
+
+	@Override
+	public boolean isStatic() {
+		return true;
+	}
+
+	@Override
+	public boolean isPublic() {
+		return true;
+	}
+
+	@Override
+	public boolean isFinal() {
+		return false;
+	}
+
+	@Override
+	public boolean isAbstract() {
+		return false;
+	}
+
 }

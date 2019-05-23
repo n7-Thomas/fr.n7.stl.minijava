@@ -13,9 +13,9 @@ import fr.n7.stl.tam.ast.TAMFactory;
 
 public class AttributDeclaration implements Definition {
 	
-	private String name;
-	private Type type;
-	private List<Keyword> keywords;
+	protected String name;
+	protected Type type;
+	protected List<Keyword> keywords;
 
 	public AttributDeclaration(List<Keyword> _keywords, Type _type, String _nom_classe, String _name) {
 		this.name = _name;
@@ -59,17 +59,29 @@ public class AttributDeclaration implements Definition {
 	public Fragment getCode(TAMFactory _factory) {
 		throw new SemanticsUndefinedException("get code not impl");
 	}
-
+	@Override
 	public boolean isPrivate() {
 		return this.keywords.contains(Keyword.PRIVATE);
 	}
-	
+	@Override
 	public boolean isStatic() {
 		return this.keywords.contains(Keyword.STATIC);
 	}
-	
+	@Override	
 	public boolean isFinal() {
 		return this.keywords.contains(Keyword.FINAL);
 	}
+
+	@Override
+	public boolean isPublic() {
+		return this.keywords.contains(Keyword.PUBLIC);
+	}
+	
+	@Override
+	public boolean isAbstract() {
+		return this.keywords.contains(Keyword.ABSTRACT);
+	}
+	
+	
 
 }

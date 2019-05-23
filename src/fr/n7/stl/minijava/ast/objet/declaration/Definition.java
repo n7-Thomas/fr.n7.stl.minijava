@@ -12,4 +12,11 @@ public interface Definition extends Declaration
 	public boolean checkType(); 
 	public int allocateMemory(Register _register, int _offset);
 	public Fragment getCode(TAMFactory _factory);
+	
+	public boolean isPrivate();
+	public boolean isStatic();
+	public boolean isPublic();
+	public boolean isFinal();
+	public boolean isAbstract();
+	
 }

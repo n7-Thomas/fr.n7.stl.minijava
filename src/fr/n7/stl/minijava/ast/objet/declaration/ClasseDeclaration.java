@@ -11,6 +11,7 @@ import fr.n7.stl.minijava.ast.objet.heritage.Extension;
 import fr.n7.stl.minijava.ast.objet.heritage.Instanciation;
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
+import fr.n7.stl.minijava.ast.type.ClasseType;
 import fr.n7.stl.minijava.ast.type.Type;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.Register;
@@ -38,11 +39,19 @@ public class ClasseDeclaration implements ObjetDeclaration, HierarchicalScope<De
 
 		this.definitions = new LinkedList<Definition>();
 		this.constructeurs = new LinkedList<Definition>();
-		for (Definition _definition : _definitions) {
-			if (!(_definition instanceof ConstructeurDeclaration))
-				this.definitions.add(_definition);
-			else
-				this.constructeurs.add((ConstructeurDeclaration) _definition);
+
+		if (_definitions != null) {
+			for (Definition _definition : _definitions) {
+				if (!(_definition instanceof ConstructeurDeclaration)) {
+					this.definitions.add(_definition);
+					if(_definition.isAbstract() && !_keyword.equals(Keyword.ABSTRACT)){
+						Logger.error("La classe " + this.name + " possède une méthode abstraite, elle doit donc être abstraite");
+						return;
+					}
+				} else {
+					this.constructeurs.add((ConstructeurDeclaration) _definition);
+				}
+			}
 		}
 
 		this.extension = extension;
@@ -67,21 +76,41 @@ public class ClasseDeclaration implements ObjetDeclaration, HierarchicalScope<De
 			Instanciation toHerite = this.extension.getHerites();
 			if (toHerite != null) {
 
-				// Récupération de l'interface réalisée
+				// Récupération de la classe héritée
 				Declaration decl = _scope.get(toHerite.getName());
 
+				// Vérification que c'est une classe
 				if (decl instanceof ClasseDeclaration) {
 					ClasseDeclaration claDecl = (ClasseDeclaration) decl;
 
-					// Pour chaque entête, vérification que la méthode est
-					// réalisée
-					for (Definition def : claDecl.getElements()) {
-						if (!this.contains(def.getName())) {
-							this.register(def);
+					// Si la classe est final on ne peut en hériter
+					if (!claDecl.isFinal()) {
+
+						// Pour chaque déf, on l'ajoute à la classe si elle est
+						// publique
+						for (Definition def : claDecl.getElements()) {
+							if (this.contains(def.getName()) && def.isFinal()) {
+								Logger.error("La définition " + def.getName()
+										+ " ne peut être surchargée car elle est final");
+								return false;
+							}
+
+							if (!this.contains(def.getName()) && def.isAbstract()) {
+								Logger.error(
+										"La méthode " + def.getName() + " doit être surchargée car elle est abstract");
+								return false;
+							}
+
+							if (!this.contains(def.getName()) && def.isPublic()) {
+								this.register(def);
+							}
 						}
+					} else {
+						Logger.error("Tentative d'héritage sur une classe final");
+						return false;
 					}
 				} else {
-					Logger.error("Tentative de réalisation sur autre chose qu'une interface");
+					Logger.error("Tentative d'héritage sur autre chose qu'une classe");
 					return false;
 				}
 			}
@@ -126,7 +155,7 @@ public class ClasseDeclaration implements ObjetDeclaration, HierarchicalScope<De
 			}
 
 		}
-		
+
 		if (!_scope.contains(this.name)) {
 			_scope.register(this);
 
@@ -142,6 +171,14 @@ public class ClasseDeclaration implements ObjetDeclaration, HierarchicalScope<De
 		}
 
 		return _result;
+	}
+
+	public boolean isFinal() {
+		return this.keyword.equals(Keyword.FINAL);
+	}
+
+	public boolean isAbstract() {
+		return this.keyword.equals(Keyword.ABSTRACT);
 	}
 
 	private boolean sameParametres(List<ParameterDeclaration> parametres, List<ParameterDeclaration> parametres2) {
@@ -194,7 +231,9 @@ public class ClasseDeclaration implements ObjetDeclaration, HierarchicalScope<De
 
 	@Override
 	public Type getType() {
-		throw new SemanticsUndefinedException("get Type pas implémenté");
+		// TODO C'EST DEGUEU
+		// return new ClasseType(new Instanciation(this.name));
+		throw new SemanticsUndefinedException("get type pas impl");
 	}
 
 	@Override
@@ -285,13 +324,14 @@ public class ClasseDeclaration implements ObjetDeclaration, HierarchicalScope<De
 
 	public MethodeDeclaration getMethode(String nomMethode, List<Expression> arguments) {
 		boolean _found = false;
-				
+
 		Iterator<Definition> _iter = this.definitions.iterator();
 		Definition _current = null;
 		while (_iter.hasNext() && (!_found)) {
 			_current = _iter.next();
 			if (_current instanceof MethodeDeclaration) {
-				_found = _current.getName().equals(nomMethode) && parametresCorrespond(arguments, ((MethodeDeclaration) _current).getParametres());
+				_found = _current.getName().equals(nomMethode)
+						&& parametresCorrespond(arguments, ((MethodeDeclaration) _current).getParametres());
 			}
 		}
 		if (_found) {

@@ -1,0 +1,26 @@
+class MC { 
+	public static void main () {} 
+}
+
+class A {
+	public A(){	}
+	public int a1(){}
+	private int a2(){}
+}
+
+class B {
+	public int b1(){}
+	private int b2(){}
+	
+	public int x(){
+		A obj = new A();
+		int t = 0;
+		
+		t = obj.a1(); // ok
+		//t = obj.a2(); // not ok
+		t = this.b1(); // ok
+		t = this.b2(); // ok
+		
+		
+	}
+}

@@ -457,7 +457,7 @@ Definition ::= 	/* ATTRIBUTS */
 					keywords.add(Keyword.STATIC);
 					RESULT = new AttributDeclaration(keywords, _type,  nomCourant, identifiant.getLeft());
 				:}
-				| UL_Public UL_Final Type:type Identifiant:identifiant UL_Point_Virgule 
+				| UL_Public UL_Final Type:type Identifiant:identifiant UL_Egal  Expression:valeur UL_Point_Virgule 
 				{:
 					Type _type = identifiant.getRight();
 					if (_type == null) {
@@ -468,9 +468,9 @@ Definition ::= 	/* ATTRIBUTS */
 					List<Keyword> keywords = new ArrayList<Keyword>();
 					keywords.add(Keyword.PUBLIC);
 					keywords.add(Keyword.FINAL);
-					RESULT = new AttributDeclaration(keywords, _type, nomCourant, identifiant.getLeft());
+					RESULT = new AttributFinalDeclaration(keywords, _type, nomCourant, identifiant.getLeft(), valeur);
 				:}
-				| UL_Private UL_Final Type:type Identifiant:identifiant UL_Point_Virgule
+				| UL_Private UL_Final Type:type Identifiant:identifiant UL_Egal Expression:valeur  UL_Point_Virgule
 				{:
 					Type _type = identifiant.getRight();
 					if (_type == null) {
@@ -481,9 +481,9 @@ Definition ::= 	/* ATTRIBUTS */
 					List<Keyword> keywords = new ArrayList<Keyword>();
 					keywords.add(Keyword.PRIVATE);
 					keywords.add(Keyword.FINAL);
-					RESULT = new AttributDeclaration(keywords, _type, nomCourant, identifiant.getLeft());
+					RESULT = new AttributFinalDeclaration(keywords, _type, nomCourant, identifiant.getLeft(), valeur);
 				:}
-				| UL_Public UL_Static UL_Final Type:type Identifiant:identifiant UL_Point_Virgule
+				| UL_Public UL_Static UL_Final Type:type Identifiant:identifiant  UL_Egal  Expression:valeur UL_Point_Virgule
 				{:
 					Type _type = identifiant.getRight();
 					if (_type == null) {
@@ -495,9 +495,9 @@ Definition ::= 	/* ATTRIBUTS */
 					keywords.add(Keyword.PUBLIC);
 					keywords.add(Keyword.STATIC);
 					keywords.add(Keyword.FINAL);
-					RESULT = new AttributDeclaration(keywords, _type, nomCourant, identifiant.getLeft());
+					RESULT = new AttributFinalDeclaration(keywords, _type, nomCourant, identifiant.getLeft(), valeur);
 				:}
-				| UL_Private UL_Static UL_Final Type:type Identifiant:identifiant UL_Point_Virgule
+				| UL_Private UL_Static UL_Final Type:type Identifiant:identifiant  UL_Egal  Expression:valeur UL_Point_Virgule
 				{:
 					Type _type = identifiant.getRight();
 					if (_type == null) {
@@ -509,7 +509,7 @@ Definition ::= 	/* ATTRIBUTS */
 					keywords.add(Keyword.PRIVATE);
 					keywords.add(Keyword.STATIC);
 					keywords.add(Keyword.FINAL);
-					RESULT = new AttributDeclaration(keywords, _type, nomCourant, identifiant.getLeft());
+					RESULT = new AttributFinalDeclaration(keywords, _type, nomCourant, identifiant.getLeft(), valeur);
 				:}
 				/* METHODES */
 				| UL_Public Entete:entete Bloc:bloc
@@ -538,36 +538,36 @@ Definition ::= 	/* ATTRIBUTS */
 					keywords.add(Keyword.STATIC);
 					RESULT = new MethodeDeclaration(keywords, entete, bloc);
 				:}
-				| UL_Public UL_Abstract Entete:entete Bloc:bloc
+				| UL_Public UL_Abstract Entete:entete UL_Point_Virgule
 				{:
 					List<Keyword> keywords = new ArrayList<Keyword>();
 					keywords.add(Keyword.PUBLIC);
 					keywords.add(Keyword.ABSTRACT);
-					RESULT = new MethodeDeclaration(keywords, entete, bloc);
+					RESULT = new MethodeDeclaration(keywords, entete, null);
 				:}
-				| UL_Private UL_Abstract Entete:entete Bloc:bloc
+				| UL_Private UL_Abstract Entete:entete UL_Point_Virgule
 				{:
 					List<Keyword> keywords = new ArrayList<Keyword>();
 					keywords.add(Keyword.PRIVATE);
 					keywords.add(Keyword.ABSTRACT);
-					RESULT = new MethodeDeclaration(keywords, entete, bloc);
+					RESULT = new MethodeDeclaration(keywords, entete, null);
 				:}
-				| UL_Public UL_Static UL_Abstract Entete:entete Bloc:bloc
+				| UL_Public UL_Static UL_Abstract Entete:entete UL_Point_Virgule
 				{:
 					List<Keyword> keywords = new ArrayList<Keyword>();
 					keywords.add(Keyword.PUBLIC);
 					keywords.add(Keyword.STATIC);
 					keywords.add(Keyword.ABSTRACT);
-					RESULT = new MethodeDeclaration(keywords, entete, bloc);
+					RESULT = new MethodeDeclaration(keywords, entete, null);
 				:}
-				| UL_Private UL_Static UL_Abstract Entete:entete Bloc:bloc
+				| UL_Private UL_Static UL_Abstract Entete:entete UL_Point_Virgule
 				{:
 					List<Keyword> keywords = new ArrayList<Keyword>();
 					keywords.add(Keyword.PRIVATE);
 					keywords.add(Keyword.STATIC);
 					keywords.add(Keyword.ABSTRACT);
 
-					RESULT = new MethodeDeclaration(keywords, entete, bloc);
+					RESULT = new MethodeDeclaration(keywords, entete, null);
 				:}
 				| UL_Public UL_Final Entete:entete Bloc:bloc
 				{:
@@ -1098,6 +1098,10 @@ Expression ::= /* Affectable:affectable UL_Egal Expression:expression
 			{:
 				RESULT = new AttributAccess(expression, attribut);
 			:}
+			/*| UL_Identificateur:classe UL_Point UL_Identificateur:attribut
+			{:
+				RESULT = new AttributStaticAccess(expression, attribut);
+			:}*/
 			| UL_This UL_Point UL_Identificateur:attribut
 			{:
 				RESULT = new AttributPropreAccess(nomCourant, attribut);
@@ -1210,5 +1214,13 @@ Expression ::= /* Affectable:affectable UL_Egal Expression:expression
 			{:
 				RESULT = new MethodePropreCall(nomCourant, methode, parametres);
 			:}
+			/*| UL_Identificateur:nom_classe UL_Point UL_Identificateur:methode UL_Parenthese_Ouvrante UL_Parenthese_Fermante
+			{:
+				RESULT = new MethodeStaticCall(nom_classe, methode, null);
+			:}
+			| UL_Identificateur:nom_classe UL_Point UL_Identificateur:methode UL_Parenthese_Ouvrante Expressions:parametres UL_Parenthese_Fermante
+			{:
+				RESULT = new MethodeStaticCall(nom_classe, methode, parametres);
+			:}*/
             ;
        

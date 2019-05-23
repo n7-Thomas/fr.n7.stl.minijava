@@ -60,13 +60,19 @@ public class MethodeDeclaration implements Declaration, Definition {
 		for (ParameterDeclaration pd : entete.getParametres()) {
 			tds.register(pd);
 		}
-
-		return this.corps.resolve(tds);
+		
+		if(this.corps != null) // Cas méthode abstraite
+			return this.corps.resolve(tds);
+		else 
+			return true;
 	}
 	
 	@Override
 	public boolean checkType() {
-		return this.corps.checkType();
+		if(this.corps != null) // Cas méthode abstraite
+			return this.corps.checkType();
+		else 
+			return true;
 	}
 
 	@Override
@@ -82,4 +88,28 @@ public class MethodeDeclaration implements Declaration, Definition {
 	public List<ParameterDeclaration> getParametres() {
 		return this.entete.getParametres();
 	}
+
+	public boolean isPrivate() {
+		return this.keywords.contains(Keyword.PRIVATE);
+	}
+	
+	public boolean isStatic() {
+		return this.keywords.contains(Keyword.STATIC);
+	}
+
+	@Override
+	public boolean isPublic() {
+		return this.keywords.contains(Keyword.PUBLIC);
+	}
+
+	@Override
+	public boolean isFinal() { // Bloque la surcharge
+		return this.keywords.contains(Keyword.FINAL);
+	}
+	
+	@Override
+	public boolean isAbstract() { // Force la surcharge
+		return this.keywords.contains(Keyword.ABSTRACT);
+	}
+	
 }

@@ -95,4 +95,33 @@ public class ConstructeurDeclaration implements Declaration, Definition {
 	public List<ParameterDeclaration> getParametres() {
 		return parametres;
 	}
+
+	@Override
+	public boolean isPrivate() {
+		return this.keywords.contains(Keyword.PRIVATE);
+	}
+
+	@Override
+	public boolean isStatic() {
+		//throw new SemanticsUndefinedException("Un constructeur est il statique");
+		return true;
+	}
+
+	@Override
+	public boolean isPublic() {
+		return this.keywords.contains(Keyword.PUBLIC);
+	}
+
+	@Override
+	public boolean isFinal() {
+		//throw new SemanticsUndefinedException("Un constructeur est il final");
+		return true;
+	}
+	
+	@Override
+	public boolean isAbstract() {
+		//throw new SemanticsUndefinedException("Un constructeur est il abstract");
+		return false;
+	}
+	
 }

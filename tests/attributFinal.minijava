@@ -1,0 +1,44 @@
+class MC { 
+	public static void main () {} 
+}
+
+class A {
+	
+	public final int a1 = 1;
+	private final int a2 = 2;
+	
+	public int x(){
+		int j = 0;
+		
+		//this.a1 = 1; // not ok
+		j = this.a1; // ok
+		
+		//this.a2 = 2; // not ok
+		j = this.a2; // ok
+	}
+	
+	private void b(){
+	}
+	
+	public A(){}
+	
+}
+
+class B extends A{
+	public int meth(){
+		A obj = new A();
+		int t = 0;
+		
+		//this.a1 = 1; // not ok
+		t = this.a1; // ok
+		
+		//this.a2 = 1; not ok
+		//t = this.a2; not ok
+		
+		//obj.a1 = 1; // not ok
+		t = obj.a1; // ok
+		
+		//obj.a2 = 2; // not ok
+		//t = obj.a2; // not ok
+	}
+}

@@ -9,6 +9,7 @@ import fr.n7.stl.minijava.ast.instruction.declaration.ConstantDeclaration;
 import fr.n7.stl.minijava.ast.instruction.declaration.ParameterDeclaration;
 import fr.n7.stl.minijava.ast.instruction.declaration.VariableDeclaration;
 import fr.n7.stl.minijava.ast.objet.declaration.AttributDeclaration;
+import fr.n7.stl.minijava.ast.objet.declaration.ClasseDeclaration;
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
 import fr.n7.stl.minijava.ast.type.Type;
@@ -59,6 +60,9 @@ public class IdentifierAccess extends AbstractIdentifier implements AccessibleEx
 				return true;
 			} else if(_declaration instanceof AttributDeclaration) {
 				this.expression = new AttributUse((AttributDeclaration) _declaration);
+				return true;
+			} else if(_declaration instanceof ClasseDeclaration) {
+				this.expression = new ClasseUse((ClasseDeclaration) _declaration);
 				return true;
 			} else {
 					Logger.error("The declaration for " + this.name + " is of the wrong kind.");
