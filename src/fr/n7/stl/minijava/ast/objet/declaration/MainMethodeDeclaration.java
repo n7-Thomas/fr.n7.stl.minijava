@@ -54,7 +54,7 @@ public class MainMethodeDeclaration implements Declaration, Definition {
 		return "public static void main (" + this.parametres.toString() + ")" + this.corps.toString();
 	}
 	
-	// A PRIORI OK LOL
+	@Override
 	public boolean resolve(HierarchicalScope<Declaration> _scope) {
 		
 		SymbolTable tds = new SymbolTable(_scope);
@@ -73,13 +73,24 @@ public class MainMethodeDeclaration implements Declaration, Definition {
 
 	@Override
 	public int allocateMemory(Register _register, int _offset) {
-		throw new SemanticsUndefinedException("all mem pas implé");
+		// Allouer memory pour les parametres ?
+		
+		this.corps.allocateMemory(_register, _offset);
+		
+		// Voir si on fait 3? 
+		return 0;		
 	}
 
 	@Override
 	public Fragment getCode(TAMFactory _factory) {
-		throw new SemanticsUndefinedException("get code pas implé");
-
+		Fragment f = _factory.createFragment();
+		
+		// Ajouter les parametres ?
+		
+		// Code de la méthode
+		f.append(this.corps.getCode(_factory));
+		
+		return f;		
 	}
 
 	@Override

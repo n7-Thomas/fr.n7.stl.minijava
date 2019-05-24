@@ -12,6 +12,10 @@ public class MainClasseDeclaration implements ObjetDeclaration {
 	private String name;
 
 	private MainMethodeDeclaration mainMethode;
+	
+	private Register register;
+	
+	private int offset;
 
 	public MainClasseDeclaration(String _name, MainMethodeDeclaration _mainMethode) {
 		this.name = _name;
@@ -24,7 +28,7 @@ public class MainClasseDeclaration implements ObjetDeclaration {
 			return false;
 		} else {
 			_scope.register(this);
-			return true;
+			return this.mainMethode.resolve(_scope);
 		}
 	}
 
@@ -35,14 +39,24 @@ public class MainClasseDeclaration implements ObjetDeclaration {
 
 	@Override
 	public int allocateMemory(Register _register, int _offset) {
-		// TODO Auto-generated method stub
+		
+		this.register = _register;
+		
+		this.offset = _offset;
+		
+		this.mainMethode.allocateMemory(this.register, this.offset);
+		
 		return 0;
 	}
 
 	@Override
 	public Fragment getCode(TAMFactory _factory) {
-		// TODO Auto-generated method stub
-		return null;
+		Fragment f = _factory.createFragment();
+		
+		f.append(this.mainMethode.getCode(_factory));
+		
+		return f;
+		
 	}
 
 	@Override

@@ -64,6 +64,7 @@ public class Printer implements Instruction {
 
 		// Code de l'expression
 		code.append(this.parameter.getCode(_factory));
+		
 		//System.out.println("Printer : " + this.parameter.getType());
 		code.add(TAMFactory.createPrintOperation(this.parameter.getType()));
 				

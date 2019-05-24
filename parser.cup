@@ -23,6 +23,8 @@ import fr.n7.stl.minijava.ast.type.*;
 import fr.n7.stl.minijava.ast.type.declaration.*;
 import fr.n7.stl.minijava.ast.objet.declaration.*;
 import fr.n7.stl.minijava.ast.objet.heritage.*;
+import fr.n7.stl.tam.ast.*;
+import fr.n7.stl.tam.ast.impl.*;
 import fr.n7.stl.util.*;
 
 
@@ -219,13 +221,30 @@ Programme ::= MainClasse:mainClasse Objets:objets
 				} else {
 					System.out.println("\tRESOLVE : KO");
 				}
-
 				
-
-		
+				int mem = 0;
+				System.out.println("\nAllocate memory :");
+				for(ObjetDeclaration objet : objets){
+					System.out.print(objet.getName() + " : ");
+					int obj_mem = objet.allocateMemory(Register.SB, mem);
+					mem += obj_mem;
+					System.out.println("OK");
+				}
 				
-				System.out.println("\n\n"); 
-				System.out.println(tds.toString());
+				System.out.print(mainClasse.getName() + " : ");
+				mainClasse.allocateMemory(Register.SB, mem);
+				System.out.println("OK");
+
+				System.out.println("\nGenerate code :");
+						
+				TAMFactory facto = new TAMFactoryImpl();
+				Fragment f = mainClasse.getCode(facto);
+				f.add(facto.createHalt());
+				System.out.println(f.toString());
+				PrintWriter pw = new PrintWriter("output.tam");
+				pw.write(f.toString());
+				pw.close();
+
 			:} 
 			| MainClasse:mainClasse
 			{:
@@ -239,6 +258,23 @@ Programme ::= MainClasse:mainClasse Objets:objets
 
 					if(mainClasse.checkType()){
 						System.out.println("\tCHECK TYPE : OK");
+						
+
+						System.out.print("Allocate memory :");
+						mainClasse.allocateMemory(Register.SB, 0);
+						System.out.println("OK");
+
+						System.out.println("Generate code :");
+						
+						TAMFactory facto = new TAMFactoryImpl();
+						Fragment f = mainClasse.getCode(facto);
+						f.add(facto.createHalt());
+						System.out.println(f.toString());
+						PrintWriter pw = new PrintWriter("output.tam");
+						pw.write(f.toString());
+						pw.close();
+
+
 					} else {
 						System.out.println("\tCHECK TYPE : KO");
 					}

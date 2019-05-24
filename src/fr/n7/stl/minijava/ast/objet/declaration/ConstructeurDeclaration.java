@@ -84,7 +84,8 @@ public class ConstructeurDeclaration implements Declaration, Definition {
 
 	@Override
 	public int allocateMemory(Register _register, int _offset) {
-		throw new SemanticsUndefinedException("allocate memory not imple");
+		this.corps.allocateMemory(_register, _offset);
+		return 0;
 	}
 
 	@Override

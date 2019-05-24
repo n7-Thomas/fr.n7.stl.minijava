@@ -1,29 +1,13 @@
 class MC { 
-	public static void main () {} 
+	public static void main () {
+		int x = 1;
+		print x;
+		
+		A obj = new A();
+		
+	} 
 }
 
-abstract class A {
-	private void a1(){}
-	public void a2(){}
-	private static void a3(){}
-	public static void a4(){}
-	private final void a5(){}
-	public final void a6(){}
-	private abstract void a7();
-	public abstract void a8();
-	private static final void a9(){}
-	public static final void a10(){}
-	private static abstract void a11();
-	public static abstract void a12();
-}
-
-final class B extends A {
-	private void a7(){}
-	public void a8(){}
-	private static void a11(){}
-	public static void a12(){}
-}
-
-class C { // interdit : extends B {
-	private void c(){}
+class A {
+	public A(){}
 }

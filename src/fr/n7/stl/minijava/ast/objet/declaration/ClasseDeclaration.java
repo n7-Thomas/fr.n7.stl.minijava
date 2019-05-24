@@ -11,7 +11,6 @@ import fr.n7.stl.minijava.ast.objet.heritage.Extension;
 import fr.n7.stl.minijava.ast.objet.heritage.Instanciation;
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
-import fr.n7.stl.minijava.ast.type.ClasseType;
 import fr.n7.stl.minijava.ast.type.Type;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.Register;
@@ -31,6 +30,10 @@ public class ClasseDeclaration implements ObjetDeclaration, HierarchicalScope<De
 	private HierarchicalScope<Declaration> context;
 
 	private Extension extension;
+    
+	private Register register;
+	
+	private int offset;
 
 	public ClasseDeclaration(String _name, Keyword _keyword, List<Definition> _definitions, Extension extension) {
 		this.name = _name;
@@ -216,7 +219,20 @@ public class ClasseDeclaration implements ObjetDeclaration, HierarchicalScope<De
 
 	@Override
 	public int allocateMemory(Register _register, int _offset) {
-		throw new SemanticsUndefinedException("allocate memory pas implémenté");
+		
+		this.register = _register;
+		this.offset = _offset;
+		
+		for(Definition d : this.definitions) {
+			d.allocateMemory(this.register, this.offset);
+		}
+		
+		for(Definition d : this.constructeurs){
+			d.allocateMemory(this.register, this.offset);
+		}
+		
+		
+		return 0;
 	}
 
 	@Override
