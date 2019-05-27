@@ -1,0 +1,41 @@
+class MC { 
+	public static void main () {
+		A obj2 = new B();
+		call obj2.addX(2);		
+		print obj2.getX();
+		
+	} 
+}
+
+class A {
+	public int x;
+	private int y;
+	public A(){
+		this.x = 0;
+		this.y = 0;
+	}
+	
+	public int getY() {
+		return this.y;	
+	}
+	
+	public void setY(int new_y) {
+		this.y = 2;
+	}
+	
+	public void addX(int adx) {
+		this.x = this.x + adx;
+	}
+	
+	public int getX(){
+		return this.x;
+	}
+	
+}
+
+class B extends A {	
+	public B() {
+		this.x = 3;
+		call this.addX(5);
+	}
+}

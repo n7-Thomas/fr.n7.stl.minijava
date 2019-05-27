@@ -1,0 +1,49 @@
+class MC { 
+	public static void main () {} 
+}
+
+interface I3 {
+	void i31();
+	int i32();
+}
+
+interface I1 extends I3 {
+	void i11();
+	int i12();
+}
+
+interface I2 {
+	void i21();
+	int i22();
+}
+
+interface I4 extends I3 {
+	void i41();
+	int i42();
+}
+
+class B implements I1  {
+	public void i11(){}
+	public int i12(){}
+	public void i31() {}
+	public int i32() {}
+	public int b1(){}
+	
+}
+
+class A extends B implements I4, I2 {
+	public void a1() {
+		int x = this.b1();
+	}
+	
+	public void i41() {}
+	public int i42() {}
+	
+	// les méthodes de B sont héritées
+	
+	public void i31() {}
+	public int i32() {}
+	public void i21() {}
+	public void i22() {}
+	
+}

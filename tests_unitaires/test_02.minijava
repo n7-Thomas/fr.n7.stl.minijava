@@ -1,0 +1,36 @@
+class MC { 
+	public static void main () {} 
+}
+
+class A {
+	public A(){	}
+	public int a1(){return 1;}
+	private int a2(){return 2;}
+	public void a3(){}
+	private void a4(){}
+	
+	
+}
+
+class B {
+	public int b1(){return 1;}
+	private int b2(){return 2;}
+	public void b3(){}
+	private void b4(){}
+	
+	public int x(){
+		A obj = new A();
+		int t = 0;
+		
+		t = obj.a1(); // ok
+		//t = obj.a2(); // not ok
+		t = this.b1(); // ok
+		t = this.b2(); // ok
+		
+		call obj.a3(); // ok
+		//call obj.a4(); // not ok
+		call this.b3(); // ok
+		call this.b4(); // ok
+		
+	}
+}

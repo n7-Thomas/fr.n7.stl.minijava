@@ -1,0 +1,35 @@
+class MC { 
+	public static void main () {
+		A obj = new A();
+		call obj.addX(2);		
+		print obj.getX();
+		
+	} 
+}
+
+class A {
+	public int x;
+	private int y;
+	
+	public A(){
+		this.x = 0;
+		this.y = 0;
+	}
+	
+	public int getY() {
+		return this.y;	
+	}
+	
+	public void setY(int new_y) {
+		this.y = new_y;
+	}
+	
+	public void addX(int adx) {
+		this.x = this.x + adx;
+	}
+	
+	public int getX(){
+		return this.x;
+	}
+	
+}

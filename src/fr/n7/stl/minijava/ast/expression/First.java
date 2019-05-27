@@ -79,7 +79,7 @@ public class First implements Expression {
 		
 		// On pop (d) n
 		int n = ((CoupleType) this.target.getType()).getSecond().length();
-		int d = ((CoupleType) this.target.getType()).getFirst().length();
+		//int d = ((CoupleType) this.target.getType()).getFirst().length();
 
 		f.add(_factory.createPop(0, n));
 		

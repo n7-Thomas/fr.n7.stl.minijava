@@ -1,0 +1,14 @@
+class MC { 
+	public static void main () {
+		A obj = new A(); //ok
+		A obj2 = new A(3, 4); // ok
+		//A obj3 = new A("ah");	// not ok
+		A obj4 = new A(2); // ne devrait pas mais passe
+	} 
+}
+
+class A {
+	public A(){}
+	public A(int b, int c){}
+	private A(int x){}
+}

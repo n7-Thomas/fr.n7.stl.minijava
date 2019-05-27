@@ -2,19 +2,22 @@ package fr.n7.stl.minijava.ast.expression;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import fr.n7.stl.minijava.ast.SemanticsUndefinedException;
+import fr.n7.stl.minijava.ast.instruction.Instruction;
 import fr.n7.stl.minijava.ast.objet.declaration.ClasseDeclaration;
+import fr.n7.stl.minijava.ast.objet.declaration.InterfaceDeclaration;
 import fr.n7.stl.minijava.ast.objet.declaration.MethodeDeclaration;
+import fr.n7.stl.minijava.ast.objet.declaration.ObjetDeclaration;
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
+import fr.n7.stl.minijava.ast.type.AtomicType;
 import fr.n7.stl.minijava.ast.type.ClasseType;
 import fr.n7.stl.minijava.ast.type.Type;
 import fr.n7.stl.tam.ast.Fragment;
+import fr.n7.stl.tam.ast.Register;
 import fr.n7.stl.tam.ast.TAMFactory;
 import fr.n7.stl.util.Logger;
 
-public class MethodeCall implements Expression {
+public class MethodeCall implements Expression, Instruction {
 
 	private Expression objet;
 
@@ -62,8 +65,13 @@ public class MethodeCall implements Expression {
 			return false;
 		}
 
-		ClasseDeclaration cd = ((ClasseType) _typeObjet).getDeclaration();
-		this.declaration = cd.getMethode(this.nomMethode, this.arguments);
+		ObjetDeclaration cd = ((ClasseType) _typeObjet).getDeclaration();
+		
+		if(cd instanceof InterfaceDeclaration)
+			return false;
+		
+		
+		this.declaration = ((ClasseDeclaration) cd).getMethode(this.nomMethode, this.arguments);
 
 		if (this.declaration != null) {
 
@@ -74,7 +82,7 @@ public class MethodeCall implements Expression {
 
 			return true;
 		} else {
-			Logger.error("La méthode n'a pas pu être trouvé");
+			Logger.error("La méthode " + this.nomMethode + " n'a pas pu être trouvé");
 			return false;
 		}
 	}
@@ -86,7 +94,33 @@ public class MethodeCall implements Expression {
 
 	@Override
 	public Fragment getCode(TAMFactory _factory) {
-		throw new SemanticsUndefinedException("get code methode call");
+		Fragment f = _factory.createFragment();
+		
+		// Code des arguments
+		for(Expression e : this.arguments){
+			f.append(e.getCode(_factory));
+		}
+		
+		// Code de l'objet
+		f.append(this.objet.getCode(_factory));
+				
+		// Appeler la fonction
+		f.add(_factory.createCall(this.declaration.getLabel(), Register.LB));
+		
+		return f;
+	}
+
+	@Override
+	public boolean checkType() {
+		// Dans le cas où on appelle checkType c'est que MethodeCall 
+		// est une instruction donc est appelée avec call => return void
+		return this.getType().equals(AtomicType.VoidType);
+	}
+
+	@Override
+	public int allocateMemory(Register _register, int _offset) {	
+				
+		return 0;
 	}
 
 }

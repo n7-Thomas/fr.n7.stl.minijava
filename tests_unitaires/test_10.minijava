@@ -1,0 +1,75 @@
+class MC { 
+	public static void main () {
+		ObjetGeometrique p1 = new Point(0, 0);
+		print p1.getX();
+		ObjetGeometrique p2 = new Point(0, 2);
+		print p2.getY();
+		Segment s = new Segment(p1, p2);
+		print s.getTailleCarre();
+	} 
+}
+
+interface ObjetGeometrique {
+	int getX();
+	int getY();
+	void setX(int mx);
+	void setY(int my);
+}
+
+class Point implements ObjetGeometrique {
+	public int x;
+	public int y;
+	
+	public Point(int mx, int my) {
+		this.x = mx;
+		this.y = my;
+	}
+	
+	public Point(int mx){
+		this.y = 0;
+		this.x = mx;
+	}
+	
+	public Point() {}
+	
+	public int getX(){ 
+		return this.x; 
+	}
+	public int getY(){ 
+		return this.y; 
+	}
+	
+	public void setX(int mx){ this.x = mx; }
+	public void setY(int my){ this.y = my; }	
+
+}
+
+
+
+class Segment {
+	private Point p1;
+	private Point p2;
+	
+	public Segment(Point pa, Point pb) {
+		this.p1 = pa;
+		this.p2 = pb;	
+	}
+	
+	public Point getP1(){
+		return this.p1;
+	}
+	
+	public Point getP2(){
+		return this.p2;
+	}
+	
+	public int getTailleCarre(){
+		int x1 = this.p1.getX();
+		int x2 = this.p2.getX();
+		int y1 = this.p1.getY();
+		int y2 = this.p2.getY();
+		
+		return (x2-x1)*(x2-x1) + (y2-y1)*(y2-y1);
+	}
+	
+}

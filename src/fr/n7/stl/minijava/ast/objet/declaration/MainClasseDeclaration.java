@@ -1,5 +1,6 @@
 package fr.n7.stl.minijava.ast.objet.declaration;
 
+import fr.n7.stl.minijava.ast.SemanticsUndefinedException;
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
 import fr.n7.stl.minijava.ast.type.Type;
@@ -12,10 +13,6 @@ public class MainClasseDeclaration implements ObjetDeclaration {
 	private String name;
 
 	private MainMethodeDeclaration mainMethode;
-	
-	private Register register;
-	
-	private int offset;
 
 	public MainClasseDeclaration(String _name, MainMethodeDeclaration _mainMethode) {
 		this.name = _name;
@@ -40,11 +37,8 @@ public class MainClasseDeclaration implements ObjetDeclaration {
 	@Override
 	public int allocateMemory(Register _register, int _offset) {
 		
-		this.register = _register;
 		
-		this.offset = _offset;
-		
-		this.mainMethode.allocateMemory(this.register, this.offset);
+		this.mainMethode.allocateMemory(_register, _offset);
 		
 		return 0;
 	}
@@ -66,12 +60,16 @@ public class MainClasseDeclaration implements ObjetDeclaration {
 
 	@Override
 	public Type getType() {
-		// TODO
-		return null;
+		throw new SemanticsUndefinedException("get Type pas impl");
 	}
 
 	public String toString() {
 		return this.getName();
+	}
+
+	@Override
+	public int getLength() {
+		return 0;
 	}
 
 }

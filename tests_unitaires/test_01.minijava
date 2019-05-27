@@ -1,0 +1,56 @@
+class MC { 
+	public static void main () {
+	} 
+}
+
+class A {
+	public int a;
+	private int b;
+	public final int c = 3;
+	private final int d = 4;
+	public static int e;
+	private static int f;
+	
+	public A() {}
+	
+	public void methode(){
+		int t = 0;
+
+		this.a = 1; // ok
+		t = this.a; // ok
+		
+		this.b = 2; // ok
+		t = this.b; // ok
+		
+		//this.c = 3; // not ok
+		t = this.c; // ok
+		
+		//this.d = 4; // not ok
+		t = this.d; // ok
+	}
+}
+
+class B {
+	public void methode(){
+		A obj = new A();
+		int t = 0;
+		
+		obj.a = 1; // ok
+		t = obj.a; // ok
+		
+		//obj.b = 2; // not ok
+		//t = obj.b; // not ok
+		
+		//obj.c = 3; // not ok
+		t = obj.c; // ok
+		
+		//obj.d = 4; // not ok
+		//t = obj.d; // not ok
+		
+		A:e = 2; // ok
+		A:f = 2; // ne devrait pas être ok
+		t = A:e; // ok
+		t = A:f; // ne devrait pas être ok
+		
+	}
+}

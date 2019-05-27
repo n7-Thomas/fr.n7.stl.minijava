@@ -38,9 +38,10 @@ public class ParameterUse extends AbstractUse {
 	 */
 	public Fragment getCode(TAMFactory _factory) {
 		Fragment _result = _factory.createFragment();
+		//System.out.println("Parameter Use :" + this.declaration.getName() + ":"+ this.declaration.getOffset());
 		_result.add(_factory.createLoad(
 				Register.LB, 
-				-this.declaration.getOffset(),
+				this.declaration.getOffset(),
 				this.declaration.getType().length()));
 		//_result.addComment(this.toString());
 		return _result;

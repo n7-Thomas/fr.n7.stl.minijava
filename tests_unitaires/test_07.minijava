@@ -1,0 +1,20 @@
+class MC { 
+	public static void main () {
+		A obj = new A();
+		
+		A obj2 = new A(2, 3);
+	
+	} 
+}
+
+class A {
+	private int x; // nécessaire car taille = 0 sinon !
+		
+	public A() {
+		print 0;	
+	}
+	
+	public A(int j, int z){
+		print j + z;
+	}
+}

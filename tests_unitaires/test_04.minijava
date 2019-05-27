@@ -1,0 +1,21 @@
+class MC { public static void main () {}}
+
+interface A {
+	void a();
+}
+
+
+class B implements A {
+	public void a(){} // doit être là
+	public void b(){} // peut être là
+}
+
+interface C extends A {
+	void a(); // peut être là
+	void d(int x);
+}
+
+class D implements C {
+	public void a(){} // doit être là
+	public void d(int z){} // doit être là
+}

@@ -1,0 +1,15 @@
+class MC { 
+	public static void main () {
+		print A:j;
+		A obj = new A();
+		print j;
+	} 
+}
+
+class A {
+	public static int j;
+		
+	public A(){
+		A:j = A:j + 1;
+	}
+}

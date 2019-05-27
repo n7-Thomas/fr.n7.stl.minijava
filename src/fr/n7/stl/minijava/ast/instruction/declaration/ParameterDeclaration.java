@@ -5,6 +5,7 @@ package fr.n7.stl.minijava.ast.instruction.declaration;
 
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.type.Type;
+import fr.n7.stl.tam.ast.Register;
 
 /**
  * Abstract Syntax Tree node for a formal parameter in a function declaration.
@@ -21,6 +22,9 @@ public class ParameterDeclaration implements Declaration {
 	 * AST node for the type of the formal parameter
 	 */
 	protected Type type;
+	
+	
+	protected Register register;
 	
 	/**
 	 * Offset of the formal parameter in the list of parameters for the function
@@ -75,6 +79,15 @@ public class ParameterDeclaration implements Declaration {
 	public void setOffset(int offset){
 		this.offset = offset;
 	}
+	
+	
+	public int allocateMemory(Register _register, int _offset){
+		this.register = _register;
+		this.offset = _offset;
+		//System.out.println("PD : " + this.name + " = " + _register + " : " + _offset);
+		return this.type.length();		
+	}
+	
 	
 
 }

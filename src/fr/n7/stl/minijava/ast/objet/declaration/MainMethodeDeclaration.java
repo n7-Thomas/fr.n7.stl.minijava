@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.n7.stl.minijava.ast.Block;
-import fr.n7.stl.minijava.ast.SemanticsUndefinedException;
 import fr.n7.stl.minijava.ast.instruction.declaration.ParameterDeclaration;
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
@@ -14,6 +13,7 @@ import fr.n7.stl.minijava.ast.type.Type;
 import fr.n7.stl.tam.ast.Fragment;
 import fr.n7.stl.tam.ast.Register;
 import fr.n7.stl.tam.ast.TAMFactory;
+import fr.n7.stl.util.Logger;
 
 public class MainMethodeDeclaration implements Declaration, Definition {
 	
@@ -73,23 +73,14 @@ public class MainMethodeDeclaration implements Declaration, Definition {
 
 	@Override
 	public int allocateMemory(Register _register, int _offset) {
-		// Allouer memory pour les parametres ?
-		
 		this.corps.allocateMemory(_register, _offset);
-		
-		// Voir si on fait 3? 
 		return 0;		
 	}
 
 	@Override
 	public Fragment getCode(TAMFactory _factory) {
 		Fragment f = _factory.createFragment();
-		
-		// Ajouter les parametres ?
-		
-		// Code de la méthode
 		f.append(this.corps.getCode(_factory));
-		
 		return f;		
 	}
 
@@ -116,6 +107,12 @@ public class MainMethodeDeclaration implements Declaration, Definition {
 	@Override
 	public boolean isAbstract() {
 		return false;
+	}
+
+	@Override
+	public Declaration copy(String nom_classe) {
+		Logger.error("Interdit de copier le constructeur");
+		return null;
 	}
 
 }

@@ -3,19 +3,22 @@
  */
 package fr.n7.stl.minijava.ast.expression.assignable;
 
-import fr.n7.stl.minijava.ast.SemanticsUndefinedException;
 import fr.n7.stl.minijava.ast.expression.AbstractAttribut;
+import fr.n7.stl.minijava.ast.expression.BinaryOperator;
 import fr.n7.stl.minijava.ast.objet.declaration.AttributDeclaration;
 import fr.n7.stl.minijava.ast.objet.declaration.ClasseDeclaration;
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
 import fr.n7.stl.tam.ast.Fragment;
+import fr.n7.stl.tam.ast.Register;
 import fr.n7.stl.tam.ast.TAMFactory;
 import fr.n7.stl.util.Logger;
 
 public class AttributPropreAssignment extends AbstractAttribut implements AssignableExpression {
 
 	private String nomClasse;
+	
+	
 
 	public AttributPropreAssignment(String nomClasse, String _name) {
 		super(null, _name);
@@ -31,7 +34,19 @@ public class AttributPropreAssignment extends AbstractAttribut implements Assign
 	 */
 	@Override
 	public Fragment getCode(TAMFactory _factory) {
-		throw new SemanticsUndefinedException("Err");
+		Fragment f = _factory.createFragment();
+		
+		// Il faut charger l'adresse de l'objet qui est en haut de la pile
+		f.add(_factory.createLoad(Register.LB, -1, 1));		
+		
+		// On charge l'offset à laquel est l'attribut
+		f.append(this.attribut.getCode(_factory));
+
+		// On ajoute
+		f.add(TAMFactory.createBinaryOperator(BinaryOperator.Add));
+		
+
+		return f;
 	}
 
 	/*

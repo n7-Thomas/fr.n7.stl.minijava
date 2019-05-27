@@ -20,4 +20,6 @@ public interface Declaration {
 	 */
 	public Type getType();
 
+
+
 }

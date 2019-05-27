@@ -1,7 +1,10 @@
 package fr.n7.stl.minijava.ast.type;
 
+import java.util.List;
+
 import fr.n7.stl.minijava.ast.SemanticsUndefinedException;
 import fr.n7.stl.minijava.ast.objet.declaration.ClasseDeclaration;
+import fr.n7.stl.minijava.ast.objet.declaration.ObjetDeclaration;
 import fr.n7.stl.minijava.ast.objet.heritage.Instanciation;
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
@@ -11,7 +14,8 @@ public class ClasseType implements Type {
 
 	private Instanciation instanciation;
 
-	private ClasseDeclaration declaration;
+	private ObjetDeclaration declaration;
+		
 
 	public ClasseType(Instanciation _instanciation) {
 		this.instanciation = _instanciation;
@@ -30,7 +34,28 @@ public class ClasseType implements Type {
 	@Override
 	public boolean compatibleWith(Type _other) {
 		if(_other instanceof ClasseType){
-			return this.instanciation.compatibleWith(((ClasseType) _other).instanciation);
+			ClasseType other = ((ClasseType) _other);
+			
+			//System.out.println("Compatible ? " + this.instanciation + " =? " + ((ClasseType) _other).instanciation + " decl :" + this.declaration);
+			
+			if(this.instanciation.compatibleWith(other.instanciation))
+				return true;
+			
+			if(other.declaration instanceof ClasseDeclaration){
+				List<Instanciation> interfacesRealises = ((ClasseDeclaration) other.declaration).getInterfacesRealisees();
+				Instanciation classeHerite = ((ClasseDeclaration) other.declaration).getClasseHeritee();
+				
+				if(this.instanciation.compatibleWith(classeHerite))
+					return true;
+				
+				for(Instanciation itfs : interfacesRealises){
+					if(this.instanciation.compatibleWith(itfs))
+						return true;
+				}
+				
+			}		
+
+			return false;
 		} else {
 			throw new SemanticsUndefinedException("compatiblewith to pas impl");
 			//return false;
@@ -44,7 +69,7 @@ public class ClasseType implements Type {
 
 	@Override
 	public int length() {
-		throw new SemanticsUndefinedException("length to pas impl");
+		return this.declaration.getLength();
 	}
 
 	@Override
@@ -53,13 +78,14 @@ public class ClasseType implements Type {
 		if (this.declaration == null) {
 			if (_scope.knows(name)) {
 				try {
-					ClasseDeclaration _declaration = (ClasseDeclaration) _scope.get(name);
+					ObjetDeclaration _declaration = (ObjetDeclaration) _scope.get(name);
 					this.declaration = _declaration;
 					return true;
 				} catch (ClassCastException e) {
 					Logger.error("The declaration for " + name + " is of the wrong kind.");
 					return false;
 				}
+				
 			} else {
 				Logger.error("The identifier " + name + " has not been found.");
 				return false;
@@ -74,8 +100,13 @@ public class ClasseType implements Type {
 		return this.instanciation.getName();
 	}
 
-	public ClasseDeclaration getDeclaration() {
+	public ObjetDeclaration getDeclaration() {
 		return this.declaration;
+	}
+
+	public String getTailleMemoire() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

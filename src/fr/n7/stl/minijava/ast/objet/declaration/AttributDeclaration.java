@@ -3,7 +3,6 @@ package fr.n7.stl.minijava.ast.objet.declaration;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.n7.stl.minijava.ast.SemanticsUndefinedException;
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
 import fr.n7.stl.minijava.ast.type.Type;
@@ -16,6 +15,12 @@ public class AttributDeclaration implements Definition {
 	protected String name;
 	protected Type type;
 	protected List<Keyword> keywords;
+	
+	
+	// Offset dans la classe OU si static alors dans le code
+	private int offset;
+	private int length;
+	
 
 	public AttributDeclaration(List<Keyword> _keywords, Type _type, String _nom_classe, String _name) {
 		this.name = _name;
@@ -52,12 +57,31 @@ public class AttributDeclaration implements Definition {
 
 	@Override
 	public int allocateMemory(Register _register, int _offset) {
-		throw new SemanticsUndefinedException("allocate memory not impl");
+		this.offset = _offset;
+		this.length = this.type.length();
+		
+		//System.out.println("AD: "+ this.name + ":" + this.offset + " " + this.length);
+		
+		return this.length;
 	}
 
 	@Override
 	public Fragment getCode(TAMFactory _factory) {
-		throw new SemanticsUndefinedException("get code not impl");
+		Fragment code = _factory.createFragment();
+		
+		if(isStatic())	{
+			code.add(_factory.createPush(this.length));
+			code.add(_factory.createLoadL(0));
+			code.add(_factory.createStore(Register.SB, this.offset, this.length));
+			//code.add(_factory.createLoad(Register.SB, this.offset, this.length));		
+		} else {
+			// Renvoie l'offset par rapport au début dans le tas de l'objet
+			code.add(_factory.createLoadL(this.offset));
+		}
+
+		
+		return code;
+	
 	}
 	@Override
 	public boolean isPrivate() {
@@ -80,6 +104,20 @@ public class AttributDeclaration implements Definition {
 	@Override
 	public boolean isAbstract() {
 		return this.keywords.contains(Keyword.ABSTRACT);
+	}
+
+	public int getLength() {
+		return this.type.length();
+	}
+
+	
+	public int getOffset(){
+		return this.offset;
+	}
+
+	@Override
+	public Declaration copy(String nom_classe) {
+		return new AttributDeclaration(this.keywords, this.type, nom_classe, this.name);
 	}
 	
 	

@@ -3,13 +3,17 @@ package fr.n7.stl.minijava.ast.expression;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.n7.stl.minijava.ast.SemanticsUndefinedException;
 import fr.n7.stl.minijava.ast.objet.declaration.ClasseDeclaration;
 import fr.n7.stl.minijava.ast.objet.declaration.ConstructeurDeclaration;
+import fr.n7.stl.minijava.ast.objet.declaration.InterfaceDeclaration;
+import fr.n7.stl.minijava.ast.objet.declaration.ObjetDeclaration;
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
 import fr.n7.stl.minijava.ast.type.ClasseType;
 import fr.n7.stl.minijava.ast.type.Type;
 import fr.n7.stl.tam.ast.Fragment;
+import fr.n7.stl.tam.ast.Register;
 import fr.n7.stl.tam.ast.TAMFactory;
 import fr.n7.stl.util.Logger;
 
@@ -19,7 +23,9 @@ public class ConstructeurCall implements Expression {
 
 	protected List<Expression> arguments;
 
+
 	private ConstructeurDeclaration declaration;
+
 
 	public ConstructeurCall(Type type, List<Expression> _arguments) {
 		this.type = type;
@@ -30,6 +36,7 @@ public class ConstructeurCall implements Expression {
 			this.arguments = _arguments;
 
 		this.declaration = null;
+	
 	}
 
 	@Override
@@ -51,8 +58,11 @@ public class ConstructeurCall implements Expression {
 			return false;
 		}
 
-		ClasseDeclaration cd = ((ClasseType) this.type).getDeclaration();
-		this.declaration = cd.getConstructeur(this.arguments);
+		ObjetDeclaration cd = ((ClasseType) this.type).getDeclaration();
+		if(cd instanceof InterfaceDeclaration)
+			return false;
+		
+		this.declaration = ((ClasseDeclaration) cd).getConstructeur(this.arguments);
 		if(this.declaration != null){
 			return true;
 		} else {
@@ -63,14 +73,17 @@ public class ConstructeurCall implements Expression {
 
 	@Override
 	public Type getType() {
-		// TODO Auto-generated method stub
-		return null;
+		throw new SemanticsUndefinedException("Get type pas implémenté");
 	}
 
 	@Override
 	public Fragment getCode(TAMFactory _factory) {
-		// TODO Auto-generated method stub
-		return null;
+		Fragment f = _factory.createFragment();
+				
+		// Appeler la fonction
+		f.add(_factory.createCall(this.declaration.getLabel(), Register.LB));
+		
+		return f;
 	}
 
 	@Override
@@ -78,4 +91,13 @@ public class ConstructeurCall implements Expression {
 		return this.type.toString() + this.declaration.toString() + "(" + this.arguments.toString() + ")";
 	}
 
+	public ClasseDeclaration getClasse() {
+		return this.declaration.getClasse();
+	}
+	
+	public List<Expression> getArguments() {
+		return arguments;
+	}
+
+	
 }

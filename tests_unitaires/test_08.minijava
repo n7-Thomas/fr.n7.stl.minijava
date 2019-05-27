@@ -1,0 +1,17 @@
+class MC { 
+	public static void main () {
+		A obj = new A();
+		print obj.a;	
+	} 
+}
+
+class A {
+	public int a;
+	private int b;
+
+	public A() {
+		this.a = 1;
+		this.b = this.a + 2;	
+	}
+}
+

@@ -10,6 +10,7 @@ import fr.n7.stl.minijava.ast.objet.declaration.AttributDeclaration;
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
 import fr.n7.stl.minijava.ast.type.ArrayType;
+import fr.n7.stl.minijava.ast.type.ClasseType;
 import fr.n7.stl.minijava.ast.type.PointerType;
 import fr.n7.stl.minijava.ast.type.Type;
 import fr.n7.stl.tam.ast.Fragment;
@@ -110,6 +111,9 @@ public class VariableAssignment extends AbstractIdentifier implements Assignable
 				code.add(_factory.createLoad(vd.getRegister(), vd.getOffset(), 1));
 
 			} else if (this.declaration.getType() instanceof PointerType) {
+				code.add(_factory.createLoad(vd.getRegister(), vd.getOffset(), 1));
+				
+			} else if (this.declaration.getType() instanceof ClasseType) {
 				code.add(_factory.createLoad(vd.getRegister(), vd.getOffset(), 1));
 			} else {
 				// LOADA @id

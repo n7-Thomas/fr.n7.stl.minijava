@@ -1,0 +1,13 @@
+class MC { 
+	public static void main () {
+		B obj = new B();
+		print obj.x; // Quelle valeur ??
+		B obj2 = new B();
+		print obj2.x;
+	}
+}
+
+class B {
+	public int x;
+	public B(){}
+}

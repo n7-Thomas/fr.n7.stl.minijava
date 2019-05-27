@@ -19,4 +19,6 @@ public interface Definition extends Declaration
 	public boolean isFinal();
 	public boolean isAbstract();
 	
+	public Declaration copy(String nom_classe);
+	
 }

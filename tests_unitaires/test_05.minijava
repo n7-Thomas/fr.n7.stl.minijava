@@ -1,0 +1,34 @@
+class MC { 
+	public static void main () {
+		A obj = new A();
+		A obj2 = new B();
+		B obj3 = new B();
+		//call obj.b(); // ne passera pas
+		//call obj2.b(); // devrait passer
+		call obj3.b(); // passe
+	}
+}
+
+class A {
+	public A(){}
+	public void a(){}
+}
+
+class B extends A {
+	public B(){}
+	public void b() {}
+}
+
+abstract class C {
+	//public C(){} // not ok
+	public abstract void c(); // ok
+}
+
+final class D extends C {
+	public void c(){}
+	//public abstract void d(); // not ok
+}
+
+//class E extends D {} // not ok
+
+

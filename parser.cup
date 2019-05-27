@@ -82,6 +82,7 @@ terminal                UL_Interface, UL_Class;
 terminal                UL_Extends, UL_Implements;
 terminal                UL_Final, UL_Abstract, UL_Public, UL_Private, UL_Static;
 terminal                UL_Main, UL_This;
+terminal				UL_Call;
 terminal				UL_Definition_Constante, UL_Definition_Type, UL_Enregistrement, UL_Enumeration;
 terminal				UL_Type_Booleen, UL_Type_Caractere, UL_Type_Chaine, UL_Type_Entier, UL_Type_Flottant, UL_Type_Vide;
 terminal String		    UL_Identificateur, UL_Chaine, UL_Caractere;
@@ -189,7 +190,7 @@ Programme ::= MainClasse:mainClasse Objets:objets
 				//System.out.println(mainClasse);				
 				
 				SymbolTable tds = new SymbolTable();
-			   
+			    boolean ok = true;
 				for(ObjetDeclaration objet : objets){
 					System.out.println(objet.getName() + " : ");
 					if(objet.resolve(tds)){
@@ -199,6 +200,7 @@ Programme ::= MainClasse:mainClasse Objets:objets
 							System.out.println("\tCHECK TYPE : OK");
 						} else {
 							System.out.println("\tCHECK TYPE : KO");
+							ok = false;
 						}		
 
 
@@ -207,6 +209,7 @@ Programme ::= MainClasse:mainClasse Objets:objets
 					}	
 				}
 				
+				if(ok){
 				System.out.println(mainClasse.getName() + " : ");
 				if(mainClasse.resolve(tds)){
 			
@@ -214,37 +217,41 @@ Programme ::= MainClasse:mainClasse Objets:objets
 
 					if(mainClasse.checkType()){
 						System.out.println("\tCHECK TYPE : OK");
-					} else {
-						System.out.println("\tCHECK TYPE : KO");
-					}
-	
-				} else {
-					System.out.println("\tRESOLVE : KO");
-				}
+						int mem = 0;
+						System.out.println("\nAllocate memory :");
+						for(ObjetDeclaration objet : objets){
+							System.out.print(objet.getName() + " : ");
+							int obj_mem = objet.allocateMemory(Register.SB, mem);
+							mem += obj_mem;
+							System.out.println("OK");
+						}
 				
-				int mem = 0;
-				System.out.println("\nAllocate memory :");
-				for(ObjetDeclaration objet : objets){
-					System.out.print(objet.getName() + " : ");
-					int obj_mem = objet.allocateMemory(Register.SB, mem);
-					mem += obj_mem;
-					System.out.println("OK");
-				}
-				
-				System.out.print(mainClasse.getName() + " : ");
-				mainClasse.allocateMemory(Register.SB, mem);
-				System.out.println("OK");
+						System.out.print(mainClasse.getName() + " : ");
+						mainClasse.allocateMemory(Register.SB, mem);
+						System.out.println("OK");
 
-				System.out.println("\nGenerate code :");
+
+						System.out.println("\nGenerate code :");
 						
-				TAMFactory facto = new TAMFactoryImpl();
-				Fragment f = mainClasse.getCode(facto);
-				f.add(facto.createHalt());
-				System.out.println(f.toString());
-				PrintWriter pw = new PrintWriter("output.tam");
-				pw.write(f.toString());
-				pw.close();
-
+						TAMFactory facto = new TAMFactoryImpl();
+						Fragment f = facto.createFragment();
+						for(ObjetDeclaration objet : objets){
+							f.append(objet.getCode(facto));
+						}
+						f.append(mainClasse.getCode(facto));
+						f.add(facto.createHalt());
+						System.out.println(f.toString());
+						PrintWriter pw = new PrintWriter("output.tam");
+						pw.write(f.toString());
+						pw.close();
+						} else {
+							System.out.println("\tCHECK TYPE : KO");
+						}
+	
+					} else {
+						System.out.println("\tRESOLVE : KO");
+					}
+				}
 			:} 
 			| MainClasse:mainClasse
 			{:
@@ -988,6 +995,22 @@ Instruction ::= Declaration:declaration
 				{:
 					RESULT = new Return( expression, entCour);
 				:}
+			| UL_Call Expression:objet UL_Point UL_Identificateur:methode UL_Parenthese_Ouvrante UL_Parenthese_Fermante UL_Point_Virgule
+			{:
+				RESULT = new MethodeCall(objet, methode, null);
+			:}
+			| UL_Call Expression:objet UL_Point UL_Identificateur:methode UL_Parenthese_Ouvrante Expressions:parametres UL_Parenthese_Fermante UL_Point_Virgule
+			{:
+				RESULT = new MethodeCall(objet, methode, parametres);
+			:}
+			| UL_Call UL_This UL_Point UL_Identificateur:methode UL_Parenthese_Ouvrante UL_Parenthese_Fermante UL_Point_Virgule
+			{:
+				RESULT = new MethodePropreCall(nomCourant, methode, null);
+			:}
+			| UL_Call UL_This UL_Point UL_Identificateur:methode UL_Parenthese_Ouvrante Expressions:parametres UL_Parenthese_Fermante UL_Point_Virgule
+			{:
+				RESULT = new MethodePropreCall(nomCourant, methode, parametres);
+			:}
 			;
 			
 Expressions ::= Expressions:expressions UL_Virgule Expression:expression 	
@@ -1033,13 +1056,10 @@ Affectable ::= UL_Identificateur:nom
 				{:
 					RESULT = new AttributPropreAssignment(nomCourant, attribut);
 				:}
-				
-				
-				
-			/*| Affectable:objet UL_Point UL_Identificateur:methode UL_Parenthese_Ouvrante UL_Parenthese_Fermante
+			| UL_Identificateur:ident UL_Deux_Points  UL_Identificateur:attribut
 				{:
-					RESULT = new MethodeAccess(objet, methode);
-				:}*/
+					RESULT = new AttributStaticAssignment(ident, attribut);
+				:}
 			;
 			            
 Expression ::= /* Affectable:affectable UL_Egal Expression:expression 
@@ -1134,10 +1154,10 @@ Expression ::= /* Affectable:affectable UL_Egal Expression:expression
 			{:
 				RESULT = new AttributAccess(expression, attribut);
 			:}
-			/*| UL_Identificateur:classe UL_Point UL_Identificateur:attribut
+			| UL_Identificateur:classe UL_Deux_Points UL_Identificateur:attribut
 			{:
-				RESULT = new AttributStaticAccess(expression, attribut);
-			:}*/
+				RESULT = new AttributStaticAccess(classe, attribut);
+			:}
 			| UL_This UL_Point UL_Identificateur:attribut
 			{:
 				RESULT = new AttributPropreAccess(nomCourant, attribut);
@@ -1250,13 +1270,13 @@ Expression ::= /* Affectable:affectable UL_Egal Expression:expression
 			{:
 				RESULT = new MethodePropreCall(nomCourant, methode, parametres);
 			:}
-			/*| UL_Identificateur:nom_classe UL_Point UL_Identificateur:methode UL_Parenthese_Ouvrante UL_Parenthese_Fermante
+			| UL_Identificateur:nom_classe UL_Deux_Points UL_Identificateur:methode UL_Parenthese_Ouvrante UL_Parenthese_Fermante
 			{:
 				RESULT = new MethodeStaticCall(nom_classe, methode, null);
 			:}
-			| UL_Identificateur:nom_classe UL_Point UL_Identificateur:methode UL_Parenthese_Ouvrante Expressions:parametres UL_Parenthese_Fermante
+			| UL_Identificateur:nom_classe UL_Deux_Points UL_Identificateur:methode UL_Parenthese_Ouvrante Expressions:parametres UL_Parenthese_Fermante
 			{:
 				RESULT = new MethodeStaticCall(nom_classe, methode, parametres);
-			:}*/
+			:}
             ;
        

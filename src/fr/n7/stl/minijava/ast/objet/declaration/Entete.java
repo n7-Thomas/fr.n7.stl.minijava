@@ -17,6 +17,8 @@ public class Entete implements Declaration {
 	private Type type;
 
 	private List<ParameterDeclaration> parametres;
+	
+	private String label;
 
 	public Entete(String _name, String _nom_classe, Type _type, List<ParameterDeclaration> _parametres) {
 		this.name = _name;
@@ -25,6 +27,8 @@ public class Entete implements Declaration {
 			this.parametres = _parametres;
 		else
 			this.parametres = new ArrayList<ParameterDeclaration>();
+	
+		this.label = _nom_classe + "_" + _name;
 	}
 
 	public String getName() {
@@ -75,4 +79,7 @@ public class Entete implements Declaration {
 		}
 	}
 
+	public String getLabel() {
+		return label;
+	}
 }

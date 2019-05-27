@@ -1,7 +1,7 @@
 package fr.n7.stl.minijava.ast.expression.accessible;
 
-import fr.n7.stl.minijava.ast.SemanticsUndefinedException;
 import fr.n7.stl.minijava.ast.expression.AbstractAttribut;
+import fr.n7.stl.minijava.ast.expression.BinaryOperator;
 import fr.n7.stl.minijava.ast.expression.Expression;
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
@@ -23,7 +23,21 @@ public class AttributAccess extends AbstractAttribut implements Expression {
 
 	@Override
 	public Fragment getCode(TAMFactory _factory) {
-		throw new SemanticsUndefinedException("getCode is undefined in AttributAccess.");
+		Fragment f = _factory.createFragment();
+
+		// On charge l'adresse de l'objet
+		f.append(this.objet.getCode(_factory));
+		
+		// On charge l'index de l'attribut
+		f.append(this.attribut.getCode(_factory));
+
+		// On ajoute
+		f.add(TAMFactory.createBinaryOperator(BinaryOperator.Add));
+		
+		// Loadi
+		f.add(_factory.createLoadI(this.attribut.getLength()));
+		
+		return f;
 	}
 
 	@Override

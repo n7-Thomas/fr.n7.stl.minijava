@@ -1,7 +1,8 @@
 class MC { 
 	public static void main () {
-		Point p1 = new PointNomme("ah", 1, 2);
-		print p1.getX();	
+		PointNomme p1 = new PointNomme("ah");
+		p1 = new Point(3, 5);
+		//print p1.getX();
 		call p1.setX(3);
 		print p1.getX();	
 		print p1.getName();	
@@ -33,7 +34,8 @@ class Point implements ObjetGeometrique {
 	}
 	
 	public void setX(int mx){ this.x = mx; }
-	public void setY(int my){ this.y = my; }
+	public void setY(int my){ this.y = my; }	
+
 }
 
 
@@ -44,9 +46,7 @@ class PointNomme extends Point {
 		return this.name;
 	}
 	
-	public PointNomme(String nom, int mx, int my){
+	public PointNomme(String nom){
 		this.name = nom;
-		this.x = mx;
-		this.y = my;
 	}
 }

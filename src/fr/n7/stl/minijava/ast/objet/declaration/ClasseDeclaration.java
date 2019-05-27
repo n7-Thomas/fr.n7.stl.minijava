@@ -1,5 +1,6 @@
 package fr.n7.stl.minijava.ast.objet.declaration;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,9 +32,14 @@ public class ClasseDeclaration implements ObjetDeclaration, HierarchicalScope<De
 
 	private Extension extension;
     
-	private Register register;
+	private int tailleMemoire;
 	
+	private final int length = 1;
+
+	private Register register;
+
 	private int offset;
+		
 
 	public ClasseDeclaration(String _name, Keyword _keyword, List<Definition> _definitions, Extension extension) {
 		this.name = _name;
@@ -104,8 +110,9 @@ public class ClasseDeclaration implements ObjetDeclaration, HierarchicalScope<De
 								return false;
 							}
 
-							if (!this.contains(def.getName()) && def.isPublic()) {
+							if (!this.contains(def.getName()) && def.isPublic()) {							
 								this.register(def);
+								//this.register(def.copy(this.name));
 							}
 						}
 					} else {
@@ -219,25 +226,58 @@ public class ClasseDeclaration implements ObjetDeclaration, HierarchicalScope<De
 
 	@Override
 	public int allocateMemory(Register _register, int _offset) {
+		this.tailleMemoire = 0;
+		
+		int staticSize = 0;
+		int staticOffset = _offset;
 		
 		this.register = _register;
 		this.offset = _offset;
 		
 		for(Definition d : this.definitions) {
-			d.allocateMemory(this.register, this.offset);
+			if(d instanceof AttributDeclaration) {
+				if(d.isStatic()){
+					int dep = d.allocateMemory(_register, staticOffset);
+					staticOffset += dep;
+					staticSize += dep;
+					
+				} else {
+					d.allocateMemory(_register, this.tailleMemoire);
+					this.tailleMemoire += ((AttributDeclaration) d).getLength();
+				}
+
+			} else {
+				if(!d.isAbstract())
+					d.allocateMemory(_register, _offset);
+			}
+			
 		}
 		
 		for(Definition d : this.constructeurs){
-			d.allocateMemory(this.register, this.offset);
+			d.allocateMemory(_register, _offset);
 		}
-		
-		
-		return 0;
+
+		return staticSize;
 	}
 
 	@Override
 	public Fragment getCode(TAMFactory _factory) {
-		throw new SemanticsUndefinedException("get code pas implémenté");
+		Fragment f = _factory.createFragment();
+	
+		for(Definition cd : this.constructeurs){
+			f.append(cd.getCode(_factory));
+		}
+		
+		for(Definition md : this.definitions){
+			if(md instanceof MethodeDeclaration && !md.isAbstract())
+				f.append(md.getCode(_factory));
+			
+			if(md instanceof AttributDeclaration && md.isStatic())
+				f.append(md.getCode(_factory));
+			
+		}
+		
+		return f;
 	}
 
 	@Override
@@ -374,5 +414,47 @@ public class ClasseDeclaration implements ObjetDeclaration, HierarchicalScope<De
 			return false;
 		}
 	}
+
+	@Override
+	public int getLength() {
+		return this.length;
+	}
+	
+	public int getTailleMemoire() {
+		return this.tailleMemoire;
+	}
+
+	public List<AttributDeclaration> getAttributDeclaration() {
+		List<AttributDeclaration> ads = new ArrayList<AttributDeclaration>();
+		for(Definition d : this.definitions){
+			if(d instanceof AttributDeclaration){
+				ads.add((AttributDeclaration) d);
+			}
+		}
+		return ads;
+	}
+
+	public Register getRegister() {
+		return this.register;
+	}
+	
+	public int getOffset(){
+		return this.offset;
+	}
+
+	public Instanciation getClasseHeritee() {
+		if(this.extension != null)
+			return this.extension.getHerites();
+		else
+			return null;
+	}
+	
+	public List<Instanciation> getInterfacesRealisees() {
+		if(this.extension != null && this.extension.getRealises() != null)
+			return this.extension.getRealises();
+		else
+			return new ArrayList<Instanciation>();
+	}
+	
 
 }

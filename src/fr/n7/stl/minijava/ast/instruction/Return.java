@@ -97,7 +97,7 @@ public class Return implements Instruction {
 		f.append(this.value.getCode(_factory));
 		
 		// Return, à modifier car taille paramètres != 2
-		f.add(_factory.createReturn(this.value.getType().length(), 2)); // Remove la taille des paramètres
+		f.add(_factory.createReturn(this.value.getType().length(), this.md.getTailleParametres())); // Remove la taille des paramètres
 		
 		return f;
 	}

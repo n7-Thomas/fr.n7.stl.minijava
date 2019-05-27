@@ -20,7 +20,5 @@ class B {
 		//t = obj.a2(); // not ok
 		t = this.b1(); // ok
 		t = this.b2(); // ok
-		
-		
 	}
 }

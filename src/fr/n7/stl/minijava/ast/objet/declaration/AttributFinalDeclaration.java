@@ -2,13 +2,11 @@ package fr.n7.stl.minijava.ast.objet.declaration;
 
 import java.util.List;
 
-import fr.n7.stl.minijava.ast.SemanticsUndefinedException;
 import fr.n7.stl.minijava.ast.expression.Expression;
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
 import fr.n7.stl.minijava.ast.type.Type;
 import fr.n7.stl.tam.ast.Fragment;
-import fr.n7.stl.tam.ast.Register;
 import fr.n7.stl.tam.ast.TAMFactory;
 
 public class AttributFinalDeclaration extends AttributDeclaration {
@@ -30,13 +28,12 @@ public class AttributFinalDeclaration extends AttributDeclaration {
 	}
 
 	@Override
-	public int allocateMemory(Register _register, int _offset) {
-		throw new SemanticsUndefinedException("allocate memory not impl");
-	}
-	
-	@Override
 	public Fragment getCode(TAMFactory _factory) {
-		throw new SemanticsUndefinedException("get code not impl");
+		Fragment f = _factory.createFragment();
+		
+		f.append(this.valeur.getCode(_factory));
+		
+		return f;		
 	}
 
 }

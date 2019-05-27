@@ -1,7 +1,6 @@
 package fr.n7.stl.minijava.ast.expression.accessible;
 
 import fr.n7.stl.minijava.ast.expression.AbstractAttribut;
-import fr.n7.stl.minijava.ast.expression.BinaryOperator;
 import fr.n7.stl.minijava.ast.expression.Expression;
 import fr.n7.stl.minijava.ast.objet.declaration.AttributDeclaration;
 import fr.n7.stl.minijava.ast.objet.declaration.ClasseDeclaration;
@@ -13,11 +12,11 @@ import fr.n7.stl.tam.ast.Register;
 import fr.n7.stl.tam.ast.TAMFactory;
 import fr.n7.stl.util.Logger;
 
-public class AttributPropreAccess extends AbstractAttribut implements Expression {
+public class AttributStaticAccess extends AbstractAttribut implements Expression {
 
 	private String nomClasse;
 	
-	public AttributPropreAccess(String _nom_classe, String nom_attribut) {
+	public AttributStaticAccess(String _nom_classe, String nom_attribut) {
 		super(null, nom_attribut);
 		this.nomClasse = _nom_classe;
 	}
@@ -32,17 +31,8 @@ public class AttributPropreAccess extends AbstractAttribut implements Expression
 		Fragment f = _factory.createFragment();
 		
 		// Il faut charger l'adresse de l'objet qui est en haut de la pile
-		f.add(_factory.createLoad(Register.LB, -1, 1));		
-		
-		// On charge l'offset à laquel est l'attribut
-		f.append(this.attribut.getCode(_factory));
-
-		// On ajoute
-		f.add(TAMFactory.createBinaryOperator(BinaryOperator.Add));
-		
-		// On charge
-		f.add(_factory.createLoadI(this.attribut.getLength()));
-		
+		f.add(_factory.createLoad(Register.SB, this.attribut.getOffset(), this.attribut.getLength()));		
+			
 		return f;
 	}
 	
@@ -55,7 +45,6 @@ public class AttributPropreAccess extends AbstractAttribut implements Expression
 			Logger.error("La déclaration de la classe appelée par this n'a pas été retrouvée");
 			return false;
 		}
-		//System.out.println("Declaration : " + decl + " " + decl.getClass().getName() + " " + nomClasse);
 		
 		if (decl instanceof ClasseDeclaration) {
 

@@ -84,13 +84,12 @@ public class InterfaceDeclaration implements ObjetDeclaration, HierarchicalScope
 
 	@Override
 	public int allocateMemory(Register _register, int _offset) {
-		throw new SemanticsUndefinedException("allocate memo pas implémenté");
+		return 0;
 	}
 
 	@Override
 	public Fragment getCode(TAMFactory _factory) {
-		throw new SemanticsUndefinedException("get code pas implémenté");
-
+		return _factory.createFragment();
 	}
 
 	@Override
@@ -155,6 +154,11 @@ public class InterfaceDeclaration implements ObjetDeclaration, HierarchicalScope
 		} else {
 			throw new IllegalArgumentException();
 		}
+	}
+
+	@Override
+	public int getLength() {
+		return 0;
 	}
 
 }

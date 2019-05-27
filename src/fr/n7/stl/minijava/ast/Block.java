@@ -112,7 +112,7 @@ public class Block {
 		}
 		
 		// POP (taille var locales)
-		//code.add(_factory.createPop(0, this.tailleMemoire));
+		code.add(_factory.createPop(0, this.tailleMemoire));
 		
 		
 		return code;

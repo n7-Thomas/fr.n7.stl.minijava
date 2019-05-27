@@ -3,8 +3,8 @@
  */
 package fr.n7.stl.minijava.ast.expression.assignable;
 
-import fr.n7.stl.minijava.ast.SemanticsUndefinedException;
 import fr.n7.stl.minijava.ast.expression.AbstractAttribut;
+import fr.n7.stl.minijava.ast.expression.BinaryOperator;
 import fr.n7.stl.minijava.ast.scope.Declaration;
 import fr.n7.stl.minijava.ast.scope.HierarchicalScope;
 import fr.n7.stl.tam.ast.Fragment;
@@ -23,7 +23,18 @@ public class AttributAssignment extends AbstractAttribut implements AssignableEx
 	 */
 	@Override
 	public Fragment getCode(TAMFactory _factory) {
-		throw new SemanticsUndefinedException("Err");
+		Fragment f = _factory.createFragment();
+
+		// On charge l'adresse de l'objet
+		f.append(this.objet.getCode(_factory));
+		
+		// On charge l'index de l'attribut
+		f.append(this.attribut.getCode(_factory));
+
+		// On ajoute
+		f.add(TAMFactory.createBinaryOperator(BinaryOperator.Add));
+		
+		return f;
 	}
 	
 	@Override
