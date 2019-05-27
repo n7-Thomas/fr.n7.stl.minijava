@@ -38,6 +38,9 @@ public class MethodeStaticCall implements Expression {
 
 	@Override
 	public boolean resolve(HierarchicalScope<Declaration> _scope) {
+		
+		throw new SemanticsUndefinedException("Appel méthode statique pas implémentée");
+		/*
 		// Vérification que les arguments sont bien resolve
 		boolean okArg = true;
 
@@ -89,7 +92,7 @@ public class MethodeStaticCall implements Expression {
 		} else {
 			Logger.error("La méthode n'a pas pu être trouvé");
 			return false;
-		}
+		}*/
 	}
 
 	@Override

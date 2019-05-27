@@ -1,0 +1,20 @@
+class MC { 
+	public static void main () {
+		print A:j;
+		A obj = new A();
+		print A:j;
+		//int x = A:inc(); // not ok
+	} 
+}
+
+class A {
+	public static int j;
+		
+	public A(){
+		A:j = A:j + 1;
+	}
+	
+	public static int inc(){
+		return A:j;
+	}
+}

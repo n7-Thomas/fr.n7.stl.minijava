@@ -1,0 +1,22 @@
+A Tester : 
+Resolve et check type
+- 01: Déclaration d'attributs, portées
+- 02: Déclaration de méthodes et appels de méthodes
+- 03: Déclaration de Constructeur
+- 04: Réalisation
+- 05: Héritage
+- 06: Réalisation + Héritage
+
+Génération de code :
+- 07: Appel de constructeur, instanciation
+- 08: AttributAccess, Assignation
+- 09: MethodeCall
+- 10: Point
+
+Erreurs :
+- 11: problème héritage => rédéfinition des offset des attributs, avec la portée ça fait n'importe quo
+- 12: methode implémenté + surcharge = problèmes
+- 13: pas d'équivalent de null value
+- 14: méthodes statiques
+- pas de super, instanceof, protected
+- pas de généricité
