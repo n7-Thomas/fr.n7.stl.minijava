@@ -17,6 +17,7 @@ class B {
 	private int b2(){return 2;}
 	public void b3(){}
 	private void b4(){}
+	private int b5() {} // pas de return, ne devrait pas passer
 	
 	public int x(){
 		A obj = new A();

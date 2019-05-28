@@ -6,7 +6,8 @@ class MC {
 		print p1.getX();
 		ObjetGeometrique p2 = new Point(0, 2);
 		print p2.getY();
-		ObjetGeometrique p3 = new PointNomme("A", 0, 4);
+		//ObjetGeometrique p3 = new PointNomme("A", 0, 4);
+		Point p3 = new PointNomme("A", 0, 4);
 		print p3.getY();
 	} 
 }
@@ -48,43 +49,13 @@ class Point implements ObjetGeometrique {
 
 // Plus rien ne marchera pour Point car les 
 // AttributsDefinition sont décalés
-class PointNomme extends Point {
+class PointNomme extends Point implements ObjetGeometrique {
 	private String name;
 	
 	public PointNomme(String nom, int a, int b){
 		this.name = nom;
 		this.x = a;
 		this.y = b;
-	}
-	
-}
-
-
-
-class Segment {
-	private Point p1;
-	private Point p2;
-	
-	public Segment(Point pa, Point pb) {
-		this.p1 = pa;
-		this.p2 = pb;	
-	}
-	
-	public Point getP1(){
-		return this.p1;
-	}
-	
-	public Point getP2(){
-		return this.p2;
-	}
-	
-	public int getTailleCarre(){
-		int x1 = this.p1.getX();
-		int x2 = this.p2.getX();
-		int y1 = this.p1.getY();
-		int y2 = this.p2.getY();
-		
-		return (x2-x1)*(x2-x1) + (y2-y1)*(y2-y1);
 	}
 	
 }

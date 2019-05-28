@@ -1,4 +1,7 @@
-class MC { public static void main () {}}
+class MC { 
+	public static void main () {
+	}
+}
 
 interface A {
 	void a();
@@ -6,7 +9,7 @@ interface A {
 }
 
 
-class B implements A{
+class B implements A {
 	public void a(){}
-	public void a(int x){}
+	public void a(int x){} 
 }

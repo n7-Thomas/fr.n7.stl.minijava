@@ -1,7 +1,18 @@
 class MC { 
 	public static void main () {
 		A obj = new A();
+		// PUSH 1
+		// LOADL 2
+		// SUBR MALLOC
+		// CALL A_A_1
+		// STORE (1) 0[SB]
+		
 		print obj.a;	
+		// LOAD 0[SB]
+		// LOADL 0
+		// SUBR IADD
+		// LOADI (1)
+		// SUBR IOUT
 	} 
 }
 
@@ -11,7 +22,29 @@ class A {
 
 	public A() {
 		this.a = 1;
-		this.b = this.a + 2;	
+		// LOADL 1
+		
+		// LOAD -1[LB]
+		// LOADL 0
+		// SUBR IADD
+		
+		// STOREI (1)
+				
+		this.b = this.a + 2;
+		//LOADL 2
+		
+		// LOAD -1[LB]
+		// LOADL 0
+		// SUBR IADD
+		// LOADI (1)
+		
+		// SUBR IADD
+		
+		// LOAD -1[LB]
+		// LOADL 1
+		// SUBR IADD
+		
+		// STOREI (1)
 	}
 }
 

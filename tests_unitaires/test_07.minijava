@@ -1,8 +1,22 @@
 class MC { 
 	public static void main () {
 		A obj = new A();
+		// PUSH 1
+		// LOADL 1
+		// SUBR MALLOC
+		// CALL A_A_1
+		// STORE (1) 0[SB]
+		
+		
 		
 		A obj2 = new A(2, 3);
+		// PUSH 1
+		// LOADL 2
+		// LOADL 3
+		// LOADL 1; taille de la classe
+		// SUBR MALLOC
+		// CALL A_A_2
+		// STORE (1) 1[SB]
 	
 	} 
 }

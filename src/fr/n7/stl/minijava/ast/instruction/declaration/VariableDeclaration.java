@@ -64,15 +64,7 @@ public class VariableDeclaration implements Declaration, Instruction {
 	public VariableDeclaration(String _name, Type _type, Expression _value) {
 		this.name = _name;
 		this.value = _value;
-		
-		if(_type instanceof ClasseType){
-			this.type = this.value.getType();
-		} else {
-			this.type = _type;
-		}
-		
-		
-		
+		this.type = _type;
 	}
 
 	/*
@@ -140,8 +132,21 @@ public class VariableDeclaration implements Declaration, Instruction {
 			Logger.error("Erreur identifiant déjà pris");
 			return false;
 		} else {
+
 			boolean ok = this.value.resolve(_scope);
 			boolean okType = this.type.resolve(_scope);
+			
+			if(type instanceof ClasseType ){ 
+				// Cas de la déclaration d'une poignée, vérification du type pour changer en type réel
+				if(type.compatibleWith(this.value.getType())){
+						this.type = this.value.getType();
+				}else{
+					Logger.error("La classe " + this.type + " n'est pas compatible avec le type " + this.value.getType());
+					return false;
+				}
+
+			} 			
+			
 			if (ok && okType) {
 				_scope.register(this);
 				return true;

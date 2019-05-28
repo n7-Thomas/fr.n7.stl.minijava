@@ -88,7 +88,11 @@ public class ConstructeurCall implements Expression {
 
 	@Override
 	public String toString() {
-		return this.type.toString() + this.declaration.toString() + "(" + this.arguments.toString() + ")";
+		
+		if(this.arguments != null)		
+			return this.type.toString() + this.declaration.toString() + "(" + this.arguments.toString() + ")";
+		else
+			return this.type.toString() + this.declaration.toString() + "()";
 	}
 
 	public ClasseDeclaration getClasse() {

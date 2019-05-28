@@ -10,13 +10,23 @@ class MC {
 }
 
 class A {
+	public int x;
+	private int y;
+	
 	public A(){}
 	public void a(){}
 }
 
 class B extends A {
+
 	public B(){}
 	public void b() {}
+	
+	// public int x; // est là
+	// public void a() {} // est là
+	// public int y; // est pas là
+	// public A(); // est pas là
+	
 }
 
 abstract class C {

@@ -44,12 +44,12 @@ public class ClasseType implements Type {
 			if(other.declaration instanceof ClasseDeclaration){
 				List<Instanciation> interfacesRealises = ((ClasseDeclaration) other.declaration).getInterfacesRealisees();
 				Instanciation classeHerite = ((ClasseDeclaration) other.declaration).getClasseHeritee();
-				
-				if(this.instanciation.compatibleWith(classeHerite))
+
+				if(classeHerite != null && this.instanciation.compatibleWith(classeHerite))
 					return true;
 				
-				for(Instanciation itfs : interfacesRealises){
-					if(this.instanciation.compatibleWith(itfs))
+				for(Instanciation itf : interfacesRealises){
+					if(this.instanciation.compatibleWith(itf))
 						return true;
 				}
 				
